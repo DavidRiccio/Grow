@@ -1,13 +1,14 @@
 <template>
   <div class="container mt-5">
-    <h1 class="text-center mb-4">Index</h1>
+    <h1 class="text-center mb-4">Carrito Contacto</h1>
     <div class="row justify-content-center">
     </div>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 </script>
 
-<style>
+<style scoped>
+
 </style>
