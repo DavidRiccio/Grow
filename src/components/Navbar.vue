@@ -1,10 +1,10 @@
 <template>
-  <nav class="navbar navbar-light bg-white fixed-top shadow-sm">
+  <nav class="navbar navbar-light bg-white fixed-top shadow-sm mb-5">
     <div class="container d-flex align-items-center position-relative">
       <!-- Logo -->
       <div class="logo-container position-absolute start-0">
         <router-link to="/" class="text-decoration-none text-dark">
-          <img src="../assets/img/Logo principal con tagline.png" alt="Logo" width="50px">
+          <img src="../assets/img/Logo principal con tagline.png" alt="Logo" width="60px">
         </router-link>
       </div>
 
@@ -38,9 +38,11 @@ export default defineComponent({
 
 <style scoped>
 .navbar {
-  font-family: Arial, sans-serif;
-  font-size: 14px;
-  background-color: #f9f5e6; /* Light beige */
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  height: 80px; /* Altura fija */
 }
 .logo-container {
   position: absolute;
@@ -77,7 +79,7 @@ export default defineComponent({
 }
 
 .nav-item:hover {
-  background-color: #eae4d9;
+  background-color: #ffffff;
   color: #333;
 }
 </style>

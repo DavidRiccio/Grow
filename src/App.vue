@@ -1,11 +1,10 @@
 <template>
-  <div class="app-container">
-    <Navbar></Navbar>
-    <br>
-    <main class="content">
+  <div class="d-flex flex-column min-vh-100 mt-5">
+    <Navbar />
+    <main class="flex-grow-1">
       <router-view />
     </main>
-    <BaseFooter></BaseFooter>
+    <BaseFooter class="mt-auto" />
   </div>
 </template>
 
@@ -23,13 +22,10 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-.footer {
-  position: fixed;
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  bottom: 0;
-  left: 0;
+<style>
+/* Asegurar altura completa */
+html, body, #app {
+  height: 100%;
+  margin: 0;
 }
 </style>

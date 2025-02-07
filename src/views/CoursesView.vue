@@ -1,16 +1,21 @@
+<!-- CoursesView.vue -->
 <template>
+  <div class="container-fluid bg-light" style="min-height: calc(100vh - 160px);">
+    <div class="row justify-content-center pt-4">
+      <div class="col-12 col-md-10 text-center mb-4">
+        <h2 class="h3 fw-bold text-dark border-bottom border-2 border-primary pb-2 mt-3">
+          {{ courses.title }}
+        </h2>
+      </div>
 
-  <div class="habilidades container mt-5">
-
-    <h2 class="text-center">{{ courses.title }}</h2>
-
-    <div class="row">
-
-      <CourseCard v-for="(card, index) in courses.cards"
-        :key="index"
-        :card="card"
-        class="col-md-4 mb-4"
+      <div class="row g-3 justify-content-center px-2 mb-4">
+        <CourseCard
+          v-for="(card, index) in courses.cards"
+          :key="index"
+          :card="card"
+          class="col-12 col-sm-6 col-lg-4 col-xl-3"
         />
+      </div>
     </div>
   </div>
 </template>
@@ -20,22 +25,44 @@ import { defineComponent } from 'vue';
 import CourseCard from '../components/CourseCards.vue';
 
 export default defineComponent({
-  name: 'courses',
-  components: {
-    CourseCard,
-  },
+  name: 'CoursesView',
+  components: { CourseCard },
   data() {
     return {
       courses: {
-        title: "Courses",
+        title: "Cursos y Talleres",
         cards: [
           {
-            name: "Python",
-            description: "Tengo una gran experiencia desarrollando con python y generando webs con Django a traves de codigo pyton"
+            name: "Cortes Modernos",
+            description: "Técnicas actualizadas cada mes"
           },
           {
-            name: "JavaScript",
-            description: "Tengo una experiencia basica de Javascript junto con Jquery y Typescript"
+            name: "Barbería Clásica",
+            description: "Tradición y precisión"
+          },
+          {
+            name: "Colorimetría",
+            description: "Fundamentos científicos"
+          },
+          {
+            name: "Gestión de Salón",
+            description: "Administración eficiente"
+          },
+          {
+            name: "Tratamientos",
+            description: "Cuidado capilar profesional"
+          },
+          {
+            name: "Estilos Urbanos",
+            description: "Tendencias masculinas"
+          },
+          {
+            name: "Maquillaje Masculino",
+            description: "Estilizado moderno"
+          },
+          {
+            name: "Química Capilar",
+            description: "Composición de productos"
           }
         ]
       }

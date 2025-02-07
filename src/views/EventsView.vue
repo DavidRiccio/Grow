@@ -27,15 +27,15 @@ export default defineComponent({
   data() {
     return {
       events: {
-        title: "events",
+        title: "Eventos",
         cards: [
           {
-            name: "Python",
-            description: "Tengo una gran experiencia desarrollando con python y generando webs con Django a traves de codigo pyton"
+            name: "Reunion Barberos Santa Cruz de Tenerife",
+            description: "Meeting de barberos de Santa Cruz"
           },
           {
-            name: "JavaScript",
-            description: "Tengo una experiencia basica de Javascript junto con Jquery y Typescript"
+            name: "Torneo de cortes",
+            description: "Torneo de cortes de pelo, premio 60€"
           }
         ]
       }

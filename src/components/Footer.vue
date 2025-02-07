@@ -1,7 +1,7 @@
 <template>
   <footer class="footer bg-dark text-light py-3 text-center">
     <div class="container">
-      <p>&copy; {{ currentYear }} Mi Sitio Web. Todos los derechos reservados.</p>
+      <p>&copy; {{ currentYear }} GrowStudio. Todos los derechos reservados.</p>
     </div>
   </footer>
 </template>
@@ -14,9 +14,14 @@ const currentYear = ref(new Date().getFullYear());
 
 <style scoped>
 .footer {
-  position: relative;
-  width: 100%;
-  bottom: 0;
+  background-color: #2d2d2d;
+  color: white;
+  padding: 1rem;
+  height: 60px; /* Altura fija */
+  margin-top: auto;
+}
+.logo-footer{
+  background-color: white;
 }
 </style>
 
