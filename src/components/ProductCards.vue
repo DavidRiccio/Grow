@@ -1,12 +1,11 @@
 <template>
 
-  <div class="card text-center">
+  <div class="card text-center hover-effect">
     <div class="card-body">
       <h5 class="card-title">{{ producto.name }}</h5>
       <p class="card-text">{{ producto.description }}</p>
       <p>Precio: {{ producto.precio }}€</p>
-      <input type="number" v-model="cantidad" min="1" :max="producto.cantidad" />
-      <button @click="agregarAlCarrito">Agregar al carrito</button>
+      <button class='btn btn-outline-success' @click="agregarAlCarrito">Agregar al carrito</button>
       <p v-if="error" class="error">{{ error }}</p>
     </div>
   </div>
@@ -45,3 +44,15 @@ export default defineComponent({
     },
   });
 </script>
+
+<style scoped>
+.hover-effect {
+  transition: all 0.2s ease;
+  border: 1px solid rgba(0,0,0,0.075);
+}
+
+.hover-effect:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.1)!important;
+}
+</style>

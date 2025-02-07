@@ -1,31 +1,35 @@
 <template>
-  <nav class="navbar navbar-light bg-white fixed-top shadow-sm mb-5">
-    <div class="container d-flex align-items-center position-relative">
-      <!-- Logo -->
-      <div class="logo-container position-absolute start-0">
-        <router-link to="/" class="text-decoration-none text-dark">
-          <img src="../assets/img/Logo principal con tagline.png" alt="Logo" width="60px">
-        </router-link>
-      </div>
+  <div class="container-fluid">
+    <div class="row col-12">
+      <nav class="navbar navbar-light bg-white fixed-top shadow-sm mb-5">
+        <div class="container d-flex align-items-center position-relative">
+          <!-- Logo -->
+          <div class="logo-container start-0">
+            <router-link to="/" class="text-decoration-none text-dark">
+              <img src="../assets/img/Logo principal con tagline.png" alt="Logo" width="60px">
+            </router-link>
+          </div>
 
-      <!-- Navigation Links -->
-      <div class="navigation-container mx-auto">
-        <router-link to="/" class="nav-item text-decoration-none">Inicio</router-link>
-        <router-link to="/products" class="nav-item text-decoration-none">Productos</router-link>
-        <router-link to="/contact" class="nav-item text-decoration-none">Contacto</router-link>
-        <router-link to="/courses" class="nav-item text-decoration-none">Cursos</router-link>
-        <router-link to="/haircuts" class="nav-item text-decoration-none">Cortes</router-link>
-        <router-link to="/events" class="nav-item text-decoration-none">Eventos</router-link>
-      </div>
+          <!-- Navigation Links -->
+          <div class="navigation-container mx-auto">
+            <router-link to="/" class="nav-item text-decoration-none">Inicio</router-link>
+            <router-link to="/products" class="nav-item text-decoration-none">Productos</router-link>
+            <router-link to="/contact" class="nav-item text-decoration-none">Contacto</router-link>
+            <router-link to="/courses" class="nav-item text-decoration-none">Cursos</router-link>
+            <router-link to="/haircuts" class="nav-item text-decoration-none">Cortes</router-link>
+            <router-link to="/events" class="nav-item text-decoration-none">Eventos</router-link>
+          </div>
 
-      <!-- Cart Icon -->
-      <div class="cart-container position-absolute end-0">
-        <router-link to="/cart" class="text-decoration-none d-flex align-items-center">
-          <i class="bi bi-cart-fill"></i>
-        </router-link>
-      </div>
+          <!-- Cart Icon -->
+          <div class="cart-container end-0">
+            <router-link to="/cart" class="text-decoration-none d-flex align-items-center">
+              <i class="bi bi-cart-fill"></i>
+            </router-link>
+          </div>
+        </div>
+      </nav>
     </div>
-  </nav>
+  </div>
 </template>
 
 <script lang="ts">

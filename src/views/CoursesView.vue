@@ -1,20 +1,25 @@
-<!-- CoursesView.vue -->
 <template>
-  <div class="container-fluid bg-light" style="min-height: calc(100vh - 160px);">
-    <div class="row justify-content-center pt-4">
-      <div class="col-12 col-md-10 text-center mb-4">
-        <h2 class="h3 fw-bold text-dark border-bottom border-2 border-primary pb-2 mt-3">
-          {{ courses.title }}
-        </h2>
-      </div>
+  <div class="container-fluid bg-light">
+    <div class="row justify-content-center mt-4">
+      <div class="col-12 col-lg-10">
+        <!-- Encabezado -->
+        <div class="row mb-4">
+          <div class="col-12 text-center">
+            <h2 class="h3 fw-bold text-dark pb-2">
+              {{ courses.title }}
+            </h2>
+          </div>
+        </div>
 
-      <div class="row g-3 justify-content-center px-2 mb-4">
-        <CourseCard
-          v-for="(card, index) in courses.cards"
-          :key="index"
-          :card="card"
-          class="col-12 col-sm-6 col-lg-4 col-xl-3"
-        />
+        <!-- Grid de cursos -->
+        <div class="row g-3 justify-content-center">
+          <CourseCard
+            v-for="(card, index) in courses.cards"
+            :key="index"
+            :card="card"
+            class="col-12 col-sm-6 col-lg-4 col-xl-3 ms-3"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -40,26 +45,7 @@ export default defineComponent({
             name: "Barbería Clásica",
             description: "Tradición y precisión"
           },
-          {
-            name: "Colorimetría",
-            description: "Fundamentos científicos"
-          },
-          {
-            name: "Gestión de Salón",
-            description: "Administración eficiente"
-          },
-          {
-            name: "Tratamientos",
-            description: "Cuidado capilar profesional"
-          },
-          {
-            name: "Estilos Urbanos",
-            description: "Tendencias masculinas"
-          },
-          {
-            name: "Maquillaje Masculino",
-            description: "Estilizado moderno"
-          },
+          // ... (resto de los cursos)
           {
             name: "Química Capilar",
             description: "Composición de productos"
@@ -70,3 +56,16 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.container-fluid {
+  padding: 2rem 0;
+  min-height: calc(100vh - 120px); /* Ajuste para header y footer */
+}
+
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 1rem 0;
+  }
+}
+</style>

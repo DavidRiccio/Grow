@@ -6,7 +6,7 @@
         <div class="card shadow">
           <div class="card-body">
             <div v-for="item in cartItems" :key="item.id" class="d-flex justify-content-between align-items-center mb-3 p-3 border-bottom">
-              <div>{{ item.nombre }}</div>
+              <div>{{ item.name }}</div>
               <div class="d-flex align-items-center gap-3">
                 <button @click="removeItem(item.id)" class="btn btn-sm btn-outline-danger">×</button>
                 <span class="text-muted">${{ item.precio.toFixed(2) }}</span>
