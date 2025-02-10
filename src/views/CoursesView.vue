@@ -39,11 +39,22 @@ export default defineComponent({
         cards: [
           {
             name: "Cortes Modernos",
-            description: "Técnicas actualizadas cada mes"
+            description: "Técnicas actualizadas cada mes",
+            image: "../assets/img/ejemplo.webp"
           },
           {
             name: "Barbería Clásica",
             description: "Tradición y precisión"
+          },
+          // ... (resto de los cursos)
+          {
+            name: "Química Capilar",
+            description: "Composición de productos"
+          },
+          // ... (resto de los cursos)
+          {
+            name: "Química Capilar",
+            description: "Composición de productos"
           },
           // ... (resto de los cursos)
           {
@@ -58,6 +69,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
+
 .container-fluid {
   padding: 2rem 0;
   min-height: calc(100vh - 120px); /* Ajuste para header y footer */

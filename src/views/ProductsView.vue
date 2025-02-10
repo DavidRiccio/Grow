@@ -37,17 +37,43 @@ export default defineComponent({
       products: [
         {
           id: 1,
-          name: "Gel fijador de pelo",
-          description: "Eficaz para pelos lacios",
+          name: "Ossion Styling powder",
+          description: "",
           precio: 9.99,
           cantidad: 10,
+          image: "src/assets/img/ossion-hair-styling-powder-Photoroom.png"
         },
         {
           id: 2,
-          name: "Cera fijadora color mate",
-          description: "Cera para peinarse con tonos mate.",
-          precio: 7.95,
+          name: "Ossion Cera Wax Megahold",
+          description: "",
+          precio: 11.99,
           cantidad: 15,
+          image: "src/assets/img/ossion-hair-styling-wax-mega-hold-Photoroom.png"
+        },
+        {
+          id: 3,
+          name: "Ossion Cera Wax UltraHold",
+          description: "",
+          precio: 11.99,
+          cantidad: 15,
+          image: "src/assets/img/ultrahold-Photoroom.png"
+        },
+        {
+          id: 4,
+          name: "Ossion Sea Salt Hair Spray",
+          description: "",
+          precio: 14.99,
+          cantidad: 15,
+          image: "src/assets/img/large_MORFOSE-OSSION-SEA-SLAT-Photoroom.png"
+        },
+        {
+          id: 5,
+          name: "Ossion Cera Wax Mattehold",
+          description: "",
+          precio: 11.99,
+          cantidad: 15,
+          image: "src/assets/img/ossion-hair-styling-wax-matte-hold-verde-Photoroom.png"
         },
       ]
     };
