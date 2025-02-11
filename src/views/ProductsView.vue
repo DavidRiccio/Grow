@@ -1,13 +1,11 @@
 <template>
-  <div class="container-fluid bg-light">
+  <div class="container-fluid">
     <div class="row justify-content-center pt-4">
       <div class="col-12 col-lg-10">
         <div class="row mb-4">
-          <div class="col-12 text-center">
-            <h2 class="h3 fw-bold text-dark pb-2">
-              Productos
-            </h2>
-          </div>
+          <div class="hero-section text-center py-5">
+        <h1 class="growstudio-title mb-4">Productos</h1>
+    </div>
         </div>
         <!-- Grid de productos -->
         <div class="row g-3 justify-content-center">
@@ -41,7 +39,8 @@ export default defineComponent({
           description: "",
           precio: 9.99,
           cantidad: 10,
-          image: "src/assets/img/ossion-hair-styling-powder-Photoroom.png"
+          image: "src/assets/img/ossion-hair-styling-powder-Photoroom.png",
+          stock:10
         },
         {
           id: 2,
@@ -49,7 +48,8 @@ export default defineComponent({
           description: "",
           precio: 11.99,
           cantidad: 15,
-          image: "src/assets/img/ossion-hair-styling-wax-mega-hold-Photoroom.png"
+          image: "src/assets/img/ossion-hair-styling-wax-mega-hold-Photoroom.png",
+          stock:10
         },
         {
           id: 3,
@@ -57,7 +57,8 @@ export default defineComponent({
           description: "",
           precio: 11.99,
           cantidad: 15,
-          image: "src/assets/img/ultrahold-Photoroom.png"
+          image: "src/assets/img/ultrahold-Photoroom.png",
+          stock:10
         },
         {
           id: 4,
@@ -65,7 +66,8 @@ export default defineComponent({
           description: "",
           precio: 14.99,
           cantidad: 15,
-          image: "src/assets/img/large_MORFOSE-OSSION-SEA-SLAT-Photoroom.png"
+          image: "src/assets/img/large_MORFOSE-OSSION-SEA-SLAT-Photoroom.png",
+          stock:10
         },
         {
           id: 5,
@@ -73,7 +75,8 @@ export default defineComponent({
           description: "",
           precio: 11.99,
           cantidad: 15,
-          image: "src/assets/img/ossion-hair-styling-wax-matte-hold-verde-Photoroom.png"
+          image: "src/assets/img/ossion-hair-styling-wax-matte-hold-verde-Photoroom.png",
+          stock:10
         },
       ]
     };
@@ -83,6 +86,7 @@ export default defineComponent({
 
 <style scoped>
 .container-fluid {
+  background: radial-gradient(circle at top, #1a1a1a, #121212);
   padding: 2rem 0;
   height: 100%; /* Ajuste para header y footer */
 }

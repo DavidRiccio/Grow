@@ -5,7 +5,7 @@
         <div class="card shadow-lg border-secondary">
           <div class="card-body p-4 p-md-5">
             <!-- Encabezado -->
-            <div class="text-center mb-4">
+            <div class="text-center text-warning mb-4">
               <h1 class="h3 fw-bold text-light">Formulario de Contacto</h1>
               <p class="text-muted">Estamos aquí para ayudarte. Completa el formulario y nos pondremos en contacto contigo.</p>
             </div>
@@ -77,7 +77,7 @@
               <div class="col-12 text-center mt-4">
                 <button 
                   type="submit" 
-                  class="btn btn-primary px-5 rounded-pill fw-semibold shadow-sm"
+                  class="btn btn-warning px-5 rounded-pill fw-semibold shadow-sm"
                 >
                   Enviar Mensaje
                 </button>
@@ -94,7 +94,7 @@
 
 <style scoped>
 .container-fluid {
-  background-color: #121212 !important;
+  background: radial-gradient(circle at top, #1a1a1a, #121212);
   min-height: calc(100vh - 100px);
 }
 .card {

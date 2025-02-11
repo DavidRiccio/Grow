@@ -2,14 +2,11 @@
   <div class="container-fluid" id="events">
     <div class="row justify-content-center pt-4">
       <div class="col-12 col-lg-10">
-        <!-- Encabezado -->
-        <div class="row mb-4">
-          <div class="col-12 text-center">
-            <h2 class="h3 fw-bold text-light  pb-2">
-              {{ events.title }}
-            </h2>
-          </div>
-        </div>
+        <div class="hero-section text-center py-5">
+      <h1 class="growstudio-title mb-4">{{events.title}}</h1>
+      <p class="tagline fs-4 text-white-50">Creciendo dia a dia</p>
+    </div>
+        
 
         <!-- Grid de eventos -->
         <div class="row g-3 justify-content-center">
@@ -41,20 +38,35 @@ export default defineComponent({
         cards: [
           {
             name: "Reunión Barberos Santa Cruz de Tenerife",
-            description: "Meeting de barberos de Santa Cruz"
+            description: "Un evento exclusivo donde los barberos de Tenerife se reúnen para compartir técnicas y conocimientos.",
+            date: "2025-03-20",
+            location: "Santa Cruz de Tenerife",
+            image: "src/assets/img/eventos.png",
+            badge: "Nuevo"
           },
           {
-            name: "Torneo de cortes",
-            description: "Torneo de cortes de pelo, premio 60€"
+            name: "Torneo de Cortes",
+            description: "Un torneo donde los mejores barberos competirán por el premio de 60€. ¡Participa y demuestra tus habilidades!",
+            date: "2025-04-10",
+            location: "Tenerife",
+            image: "src/assets/img/eventos.png",
+            badge: "¡Inscripciones abiertas!"
           },
-          // Ejemplos adicionales para demostrar el grid
           {
             name: "Convención Nacional de Estilismo",
-            description: "Evento anual con expertos internacionales"
+            description: "Evento de 3 días con expertos internacionales en estilismo, para aprender las últimas tendencias.",
+            date: "2025-05-15",
+            location: "Madrid",
+            image: "src/assets/img/eventos.png",
+            badge: "Internacional"
           },
           {
             name: "Workshop de Técnicas Modernas",
-            description: "Aprende las últimas tendencias en vivo"
+            description: "En este workshop aprenderás las últimas tendencias en cortes y estilismo moderno con los mejores profesionales.",
+            date: "2025-06-05",
+            location: "Barcelona",
+            image: "src/assets/img/eventos.png",
+            badge: "Exclusivo"
           }
         ]
       }
@@ -63,9 +75,10 @@ export default defineComponent({
 });
 </script>
 
+
 <style scoped>
 #events{
-  background-color: black;
+  background: radial-gradient(circle at top, #1a1a1a, #121212);
 }
 
 .container-fluid {

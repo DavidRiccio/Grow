@@ -2,10 +2,11 @@ import { defineStore } from 'pinia';
 
 interface Product {
   id: number;
-  nombre: string;
+  name: string;
   cantidad: number;
   precio: number;
-  imagen: string;
+  image: string;
+  stock: number;
 }
 
 interface CartState {

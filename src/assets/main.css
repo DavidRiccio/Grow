@@ -1,0 +1,19 @@
+.growstudio-title {
+    font-family: 'Kanit', sans-serif;
+    font-size: 1.5rem;
+    background: linear-gradient(45deg, #ffd700, #ffaa00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  }
+
+  .growstudio-subtitle {
+    font-family: 'Kanit', sans-serif;
+    font-size: 20px;
+    background: linear-gradient(45deg, #ffd700, #ffaa00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  }

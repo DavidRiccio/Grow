@@ -5,7 +5,7 @@
       <h5 class="card-title">{{ producto.name }}</h5>
       <p class="card-text">{{ producto.description }}</p>
       <p>Precio: {{ producto.precio }}€</p>
-      <button class="btn btn-outline-success" @click="agregarAlCarrito">
+      <button class="btn btn-warning" @click="agregarAlCarrito">
         Agregar al carrito
       </button>
       <p v-if="error" class="error">{{ error }}</p>
@@ -91,13 +91,13 @@ export default defineComponent({
 
 .btn {
   color: #e0e0e0;
-  border-color: #4caf50;
+  border-color: #ffb100;
   background-color: transparent;
   transition: background-color 0.3s, color 0.3s;
 }
 
 .btn:hover {
-  background-color: #4caf50;
+  background-color: #ffb100;
   color: #1e1e1e;
 }
 
