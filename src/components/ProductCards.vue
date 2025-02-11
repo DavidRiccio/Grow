@@ -45,9 +45,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Estilos para el tema oscuro */
 
-/* Personalizamos la tarjeta para un fondo oscuro y texto claro */
+
+
 .card {
   background-color: #1e1e1e;
   color: #e0e0e0;
@@ -55,30 +55,29 @@ export default defineComponent({
   border-radius: 0.25rem;
 }
 
-/* Imagen: se adapta a un fondo oscuro */
+
 .card-img-top {
   width: 100%;
   height: auto;
   object-fit: contain;
   max-height: 200px;
-  background-color: #2a2a2a; /* fondo oscuro en lugar del claro original */
+  background-color: #2a2a2a;
   padding: 0.5rem;
 }
 
-/* Cuerpo de la tarjeta */
+
 .card-body {
   background-color: #1e1e1e;
   color: #e0e0e0;
 }
 
-/* Título y texto de la tarjeta se heredan del card-body,
-   pero se pueden ajustar individualmente si se desea */
+
 .card-title,
 .card-text {
   margin-bottom: 0.5rem;
 }
 
-/* Efecto hover para la tarjeta */
+
 .hover-effect {
   transition: all 0.2s ease;
   border: 1px solid #444;
@@ -89,7 +88,7 @@ export default defineComponent({
   box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.5) !important;
 }
 
-/* Personalización del botón para que se integre al tema oscuro */
+
 .btn {
   color: #e0e0e0;
   border-color: #4caf50;
@@ -102,7 +101,7 @@ export default defineComponent({
   color: #1e1e1e;
 }
 
-/* Estilo para mensajes de error */
+
 .error {
   color: #ff5252;
   margin-top: 0.5rem;

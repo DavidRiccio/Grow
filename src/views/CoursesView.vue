@@ -1,11 +1,11 @@
 <template>
-  <div class="container-fluid bg-light">
+  <div id="courses" class="container-fluid">
     <div class="row justify-content-center mt-4">
       <div class="col-12 col-lg-10">
         <!-- Encabezado -->
-        <div class="row mb-4">
+        <div class="row">
           <div class="col-12 text-center">
-            <h2 class="h3 fw-bold text-dark pb-2">
+            <h2 class="h3 fw-bold text-light pb-2">
               {{ courses.title }}
             </h2>
           </div>
@@ -40,23 +40,20 @@ export default defineComponent({
           {
             name: "Cortes Modernos",
             description: "Técnicas actualizadas cada mes",
-            image: "../assets/img/ejemplo.webp"
+            image: "../assests/img/Curso.webp"
           },
           {
             name: "Barbería Clásica",
             description: "Tradición y precisión"
           },
-          // ... (resto de los cursos)
           {
             name: "Química Capilar",
             description: "Composición de productos"
           },
-          // ... (resto de los cursos)
           {
             name: "Química Capilar",
             description: "Composición de productos"
           },
-          // ... (resto de los cursos)
           {
             name: "Química Capilar",
             description: "Composición de productos"
@@ -69,10 +66,13 @@ export default defineComponent({
 </script>
 
 <style scoped>
+#courses{
+  background-color: black;
+}
 
 .container-fluid {
-  padding: 2rem 0;
-  min-height: calc(100vh - 120px); /* Ajuste para header y footer */
+  padding: 4rem 0;
+  height: 100%; /* Ajuste para header y footer */
 }
 
 @media (max-width: 768px) {

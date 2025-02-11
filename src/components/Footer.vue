@@ -32,7 +32,6 @@ const currentYear = ref(new Date().getFullYear());
   background-color: #2d2d2d;
   padding: 1rem;
   min-height: 60px;
-  margin-top: auto;
 }
 
 .logo-footer {
@@ -41,7 +40,6 @@ const currentYear = ref(new Date().getFullYear());
   border-radius: 4px;
 }
 
-/* Mantener enlaces en línea en móviles */
 @media (max-width: 768px) {
   .gap-3 {
     gap: 1rem !important;

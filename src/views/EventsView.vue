@@ -1,11 +1,11 @@
 <template>
-  <div class="container-fluid bg-light">
+  <div class="container-fluid" id="events">
     <div class="row justify-content-center pt-4">
       <div class="col-12 col-lg-10">
         <!-- Encabezado -->
         <div class="row mb-4">
           <div class="col-12 text-center">
-            <h2 class="h3 fw-bold text-dark  pb-2">
+            <h2 class="h3 fw-bold text-light  pb-2">
               {{ events.title }}
             </h2>
           </div>
@@ -64,9 +64,13 @@ export default defineComponent({
 </script>
 
 <style scoped>
+#events{
+  background-color: black;
+}
+
 .container-fluid {
-  padding: 2rem 0;
-  min-height: calc(100vh - 120px); /* Ajuste para header y footer */
+  padding: 4rem 0;
+  height: 100%; /* Ajuste para header y footer */
 }
 
 @media (max-width: 768px) {

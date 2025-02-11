@@ -16,7 +16,7 @@
             <router-link to="/products" class="nav-item text-decoration-none">Productos</router-link>
             <router-link to="/contact" class="nav-item text-decoration-none">Contacto</router-link>
             <router-link to="/courses" class="nav-item text-decoration-none">Cursos</router-link>
-            <router-link to="/haircuts" class="nav-item text-decoration-none">Cortes</router-link>
+            <router-link to="/haircuts" class="nav-item text-decoration-none">Servicios</router-link>
             <router-link to="/events" class="nav-item text-decoration-none">Eventos</router-link>
           </div>
 
