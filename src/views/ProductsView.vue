@@ -84,7 +84,7 @@ export default defineComponent({
 <style scoped>
 .container-fluid {
   padding: 2rem 0;
-  min-height: calc(100vh - 120px); /* Ajuste para header y footer */
+  height: 100%; /* Ajuste para header y footer */
 }
 
 @media (max-width: 768px) {

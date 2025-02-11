@@ -41,7 +41,4 @@ html, body, #app {
 }
 
 /* Asegurar que el contenido no sobrepase el footer */
-main {
-  padding-bottom: 60px; /* Altura del footer */
-}
 </style>

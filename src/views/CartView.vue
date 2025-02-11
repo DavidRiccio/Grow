@@ -5,15 +5,45 @@
       <div class="col-md-8">
         <div class="card shadow">
           <div class="card-body">
-            <div v-for="item in cartItems" :key="item.id" class="d-flex justify-content-between align-items-center mb-3 p-3 border-bottom">
-              <div>{{ item.name }}</div>
+            <div 
+              v-for="item in cartItems" 
+              :key="item.id" 
+              class="d-flex justify-content-between align-items-center mb-3 p-3 border-bottom"
+            >
               <div class="d-flex align-items-center gap-3">
-                <button @click="removeItem(item.id)" class="btn btn-sm btn-outline-danger">×</button>
-                <span class="text-muted">${{ item.precio.toFixed(2) }}</span>
+                <img :src="item.image" alt="" class="img-thumbnail" style="width: 50px; height: 50px;">
+                <div>
+                  <strong>{{ item.name }}</strong>
+                  <div class="text-muted">Precio: €{{ item.precio.toFixed(2) }}</div>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center gap-3">
+                <button 
+                  @click="updateQuantity(item.id, item.cantidad - 1)" 
+                  class="btn btn-sm btn-outline-secondary"
+                  :disabled="item.cantidad <= 1"
+                >
+                  -
+                </button>
+                <span>{{ item.cantidad }}</span>
+                <button 
+                  @click="updateQuantity(item.id, item.cantidad + 1)" 
+                  class="btn btn-sm btn-outline-secondary"
+                >
+                  +
+                </button>
+                <button 
+                  @click="removeItem(item.id)" 
+                  class="btn btn-sm btn-outline-danger"
+                >
+                  &times;
+                </button>
               </div>
             </div>
+
             <div class="text-end fw-bold fs-5 mt-4">
-              Total: ${{ cartTotal.toFixed(2) }}
+              Total: €{{ cartTotal.toFixed(2) }}
             </div>
           </div>
         </div>
@@ -23,19 +53,37 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { useCartStore } from '@/stores/cart'
+import { defineComponent, computed } from 'vue';
+import { useCartStore } from '@/stores/cart';
 
 export default defineComponent({
   name: 'CartView',
   setup() {
-    const cartStore = useCartStore()
+    const cartStore = useCartStore();
+
+    const cartItems = computed(() => cartStore.productos);
+    const cartTotal = computed(() => cartStore.total);
+
+    const removeItem = (id: number) => {
+      cartStore.eliminarProducto(id);
+    };
+
+    const updateQuantity = (id: number, cantidad: number) => {
+      cartStore.actualizarCantidad(id, cantidad);
+    };
 
     return {
-      cartItems: cartStore.productos,
-      cartTotal: cartStore.total,
-      removeItem: cartStore.eliminarProducto
-    }
-  }
-})
+      cartItems,
+      cartTotal,
+      removeItem,
+      updateQuantity,
+    };
+  },
+});
 </script>
+
+<style scoped>
+.img-thumbnail {
+  object-fit: cover;
+}
+</style>

@@ -1,40 +1,59 @@
 <template>
-  <div class="container-fluid bg-light">
-    <div class="row justify-content-center py-5">
-      <div class="col-12 col-lg-8">
-        <div class="card shadow-sm">
+  <div class="container-fluid bg-dark py-5">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-10 col-lg-8">
+        <div class="card shadow-lg border-secondary">
           <div class="card-body p-4 p-md-5">
             <!-- Encabezado -->
-            <div class="row mb-4">
-              <div class="col-12 text-center">
-                <h1 class="h3 fw-bold text-dark pb-2">
-                  Formulario de Contacto
-                </h1>
-              </div>
+            <div class="text-center mb-4">
+              <h1 class="h3 fw-bold text-light">Formulario de Contacto</h1>
+              <p class="text-muted">Estamos aquí para ayudarte. Completa el formulario y nos pondremos en contacto contigo.</p>
             </div>
 
             <!-- Formulario -->
-            <form class="row g-4">
-              <!-- Nombre y Email -->
-              <div class="col-12 col-md-6">
-                <label for="nombre" class="form-label">Nombre completo</label>
-                <input type="text" class="form-control" id="nombre" required>
+            <form class="row g-3">
+              <!-- Nombre completo -->
+              <div class="col-12">
+                <label for="nombre" class="form-label text-light">Nombre completo</label>
+                <input 
+                  type="text" 
+                  class="form-control bg-dark text-light border-gray" 
+                  id="nombre" 
+                  placeholder="Ingresa tu nombre completo" 
+                  required
+                />
               </div>
 
-              <div class="col-12 col-md-6">
-                <label for="email" class="form-label">Correo electrónico</label>
-                <input type="email" class="form-control" id="email" required>
+              <!-- Correo electrónico -->
+              <div class="col-12">
+                <label for="email" class="form-label text-light">Correo electrónico</label>
+                <input 
+                  type="email" 
+                  class="form-control bg-dark text-light border-gray" 
+                  id="email" 
+                  placeholder="Ingresa tu correo electrónico" 
+                  required
+                />
               </div>
 
               <!-- Teléfono y Asunto -->
               <div class="col-12 col-md-6">
-                <label for="telefono" class="form-label">Teléfono</label>
-                <input type="tel" class="form-control" id="telefono">
+                <label for="telefono" class="form-label text-light">Teléfono</label>
+                <input 
+                  type="tel" 
+                  class="form-control bg-dark text-light border-gray" 
+                  id="telefono" 
+                  placeholder="Ingresa tu número de teléfono"
+                />
               </div>
 
               <div class="col-12 col-md-6">
-                <label for="asunto" class="form-label">Asunto</label>
-                <select class="form-select" id="asunto" required>
+                <label for="asunto" class="form-label text-light">Asunto</label>
+                <select 
+                  class="form-select bg-dark text-light border-gray" 
+                  id="asunto" 
+                  required
+                >
                   <option value="">Seleccione...</option>
                   <option>Consulta general</option>
                   <option>Soporte técnico</option>
@@ -44,13 +63,22 @@
 
               <!-- Mensaje -->
               <div class="col-12">
-                <label for="mensaje" class="form-label">Mensaje</label>
-                <textarea class="form-control" id="mensaje" rows="4" required></textarea>
+                <label for="mensaje" class="form-label text-light">Mensaje</label>
+                <textarea 
+                  class="form-control bg-dark text-light border-gray" 
+                  id="mensaje" 
+                  rows="5" 
+                  placeholder="Escribe tu mensaje aquí" 
+                  required
+                ></textarea>
               </div>
 
               <!-- Botón -->
-              <div class="col-12 text-center">
-                <button type="submit" class="btn btn-primary px-5 rounded-pill">
+              <div class="col-12 text-center mt-4">
+                <button 
+                  type="submit" 
+                  class="btn btn-primary px-5 rounded-pill fw-semibold shadow-sm"
+                >
                   Enviar Mensaje
                 </button>
               </div>
@@ -62,45 +90,54 @@
   </div>
 </template>
 
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <style scoped>
 .container-fluid {
-  min-height: calc(100vh - 120px); /* Ajuste para header y footer */
-  padding-top: 2rem;
-  padding-bottom: 2rem;
+  background-color: #121212 !important;
+  min-height: calc(100vh - 100px);
 }
-
 .card {
-  border: none;
+  background-color: #1e1e1e;
   border-radius: 15px;
+  border: 1px solid #2d2d2d;
 }
-
 .form-label {
   font-weight: 500;
-  color: #2c3e50;
+  color: #e0e0e0 !important;
 }
-
+.form-control,
+.form-select {
+  background-color: #2d2d2d !important;
+  border: 1px solid #404040 !important;
+  color: #ffffff !important;
+  transition: all 0.3s ease;
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: #3498db !important;
+  box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25) !important;
+}
 .btn-primary {
   background-color: #3498db;
   border: none;
   padding: 0.75rem 2rem;
   transition: all 0.3s ease;
 }
-
 .btn-primary:hover {
   background-color: #2980b9;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
 }
-
+.text-muted {
+  color: #b0b0b0 !important;
+}
+.border-gray {
+  border-color: #404040 !important;
+}
 @media (max-width: 768px) {
-  .container-fluid {
-    padding: 1rem;
-  }
-
-  .card-body {
-    padding: 1.5rem !important;
+  .btn-primary {
+    width: 100%;
   }
 }
 </style>
