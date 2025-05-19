@@ -4,7 +4,6 @@
       <div class="col-12 px-0">
         <Navbar />
         <AdminBar />
-        <!-- Agregar AdminBar aquí -->
       </div>
     </div>
 
@@ -24,10 +23,10 @@
 
 <script lang="ts">
 import { defineComponent, onMounted } from 'vue';
-import { useUser Store } from './stores/userStore'; // Asegúrate de que la ruta sea correcta
+import { useUserStore } from './stores/userStore.ts';
 import Navbar from './components/Navbar.vue';
 import BaseFooter from './components/Footer.vue';
-import AdminBar from './components/AdminBar.vue'; // Importar AdminBar
+import AdminBar from './views/AdminBar.vue';
 
 export default defineComponent({
   name: 'App',
@@ -37,7 +36,7 @@ export default defineComponent({
     AdminBar,
   },
   setup() {
-    const userStore = useUser Store();
+    const userStore = useUserStore();
 
     onMounted(() => {
       if (!userStore.user) {

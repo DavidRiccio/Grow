@@ -1,12 +1,14 @@
 <template>
   <div class="container mt-4">
-    <h2 class="mb-4">Panel de Administrador</h2>
+    <h2 class="mb-4 text-dark">Panel de Administrador</h2>
+
 
     <div class="row">
       <!-- Tarjetas de resumen -->
       <div class="col-md-4" v-for="card in summaryCards" :key="card.title">
         <div class="card text-white bg-primary mb-3">
           <div class="card-body">
+            <h1> Hola</h1>
             <h5 class="card-title">{{ card.title }}</h5>
             <p class="card-text fs-4">{{ card.value }}</p>
           </div>

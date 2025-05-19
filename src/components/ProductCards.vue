@@ -4,7 +4,7 @@
     <div class="card-body">
       <h5 class="card-title">{{ producto.name }}</h5>
       <p class="card-text">{{ producto.description }}</p>
-      <p>Precio: {{ producto.precio }}€</p>
+      <p>Precio: {{ producto.price }}€</p>
       <button class="btn btn-warning" @click="agregarAlCarrito">
         Agregar al carrito
       </button>

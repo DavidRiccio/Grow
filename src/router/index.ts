@@ -7,8 +7,7 @@ import Services from '../views/ServicesView.vue';
 import Products from '../views/ProductsView.vue';
 import Events from '../views/EventsView.vue';
 import Cart from '../views/CartView.vue';
-import Courses from '../views/CoursesView.vue';
-import Admin from '../views/AdminDashboard.vue;
+import Admin from '../views/AdminDashboard.vue';
 
 const routes = [
   {path: '/', component: Home},
@@ -17,8 +16,7 @@ const routes = [
   {path: '/products',component: Products},
   {path: '/services',component: Services},
   {path: '/events',component: Events},
-  {path: '/courses',component: Courses},
-  {path: '/cart',component: Cart}
+  {path: '/cart',component: Cart},
   {path: '/admin',component: Admin}
 ];
 

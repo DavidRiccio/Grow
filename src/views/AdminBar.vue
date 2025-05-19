@@ -1,6 +1,5 @@
 <template>
-  <!-- Navbar con botones vacíos como links -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+  <nav v-if="role === 'A'" class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
     <div class="container-fluid">
       <button
         class="navbar-toggler"
@@ -28,7 +27,6 @@
     </div>
   </nav>
 
-  <!-- Mensaje de administrador -->
   <div v-if="role === 'A'" class="bg-warning text-dark py-2 text-center fw-semibold shadow-sm">
     ⚠️ Estás conectado como <strong>Administrador</strong>
   </div>

@@ -3,8 +3,9 @@ import { ref, computed } from 'vue';
 
 interface User {
   id: number;
-  name: string;
+  user: string;
   role: string;
+  token: string;
 }
 
 export const useUserStore = defineStore('user', () => {

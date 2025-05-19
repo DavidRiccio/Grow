@@ -1,12 +1,6 @@
 <template>
   <nav id="navbar" class="navbar navbar-expand-lg navbar-dark  fixed-top shadow-sm">
     <div class="container-fluid">
-      <!-- Logo -->
-      <router-link to="/" class="navbar-brand">
-        <div class="logo-container">
-          <img src="../assets/img/Logo principal con tagline.png" alt="Logo" class="logo-dark">
-        </div>
-      </router-link>
 
       <!-- Toggler (Hamburger) for mobile view -->
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,9 +15,6 @@
           </li>
           <li class="nav-item">
             <router-link to="/products" class="nav-link">Productos</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/courses" class="nav-link">Cursos</router-link>
           </li>
           <li class="nav-item">
             <router-link to="/services" class="nav-link">Servicios</router-link>

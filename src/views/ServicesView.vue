@@ -38,7 +38,9 @@
               <div class="d-flex justify-content-between align-items-center border-top border-warning pt-3">
                 <div class="d-flex align-items-center gap-2 text-warning">
                   <i class="bi bi-clock fs-5"></i>
-                  <span>{{ service.duration }}</span>
+                  <span>{{ formatDuration(service.duration) }}</span>
+
+
                 </div>
                 <span class="text-warning fw-bold fs-5">
                   €{{ service.price }}
@@ -52,82 +54,52 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 
-export default defineComponent({
-  name: 'ServicesView',
-  data() {
-    return {
-  "services": [
-    {
-      "id": 1,
-      "category": "CORTE",
-      "title": "Corte Completo",
-      "description": "Estilo moderno con técnicas profesionales",
-      "price": 14,
-      "duration": "45 min",
-      "image": 'src/assets/img/curso1.png'
-    },
-    {
-      "id": 2,
-      "category": "CORTE + BARBA",
-      "title": "Corte Completo + Barba",
-      "description": "Acompañado de arreglo de barba profesional",
-      "price": 19,
-      "duration": "60 min",
-      "image": 'src/assets/img/curso2.png'
-    },
-    {
-      "id": 3,
-      "category": "BARBA",
-      "title": "Arreglo de Barba",
-      "description": "Modelado y acabado perfecto",
-      "price": 8,
-      "duration": "30 min",
-      "image": 'src/assets/img/curso3.png'
-    },
-    {
-      "id": 4,
-      "category": "CORTE",
-      "title": "Corte Clásico",
-      "description": "Estilo tradicional atemporal",
-      "price": 12,
-      "duration": "40 min",
-      "image": 'src/assets/img/curso7.png'
-    },
-    {
-      "id": 5,
-      "category": "COLOR",
-      "title": "Mechas profesionales",
-      "description": "Técnicas de mechas californianas",
-      "price": 20,
-      "duration": "90 min",
-      "image": 'src/assets/img/curso4.png'
-    },
-    {
-      "id": 6,
-      "category": "COLOR",
-      "title": "Tinte y Color",
-      "description": "Coloración completa con productos premium",
-      "price": 20,
-      "duration": "120 min",
-      "image": 'src/assets/img/curso5.png'
-    },
-    {
-      "id": 7,
-      "category": "TRATAMIENTO",
-      "title": "Decoloración",
-      "description": "Servicio profesional de decoloración",
-      "price": 10,
-      "duration": "60 min",
-      "image": 'src/assets/img/curso6.png'
-    }
-  ]
-}
+
+function formatDuration(isoDuration: string): string {
+  const match = isoDuration.match(
+    /P(?:(\d+)D)?T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/
+  )
+
+  if (!match) return isoDuration
+
+  const days = match[1] ? parseInt(match[1]) : 0
+  const hours = match[2] ? parseInt(match[2]) : 0
+  const minutes = match[3] ? parseInt(match[3]) : 0
+  const seconds = match[4] ? parseInt(match[4]) : 0
+
+  let parts: string[] = []
+
+  if (days > 0) parts.push(`${days}d`)
+  if (hours > 0) parts.push(`${hours}h`)
+  if (minutes > 0) parts.push(`${minutes}min`)
+  if (seconds > 0 && hours === 0 && minutes === 0) {
+    // Solo mostrar segundos si no hay horas/minutos
+    parts.push(`${seconds}s`)
   }
-});
+
+  return parts.join(' ') || '0min'
+}
+
+const services = ref<any[]>([])
+
+const fetchServices = async () => {
+  try {
+    const res = await axios.get('http://localhost:8000/api/services/')
+    services.value = res.data
+  } catch (err) {
+    console.error('Error al cargar servicios:', err)
+  }
+}
+
+
+
+onMounted(fetchServices)
 </script>
+
 
 <style>
 #services{
