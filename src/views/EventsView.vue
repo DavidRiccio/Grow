@@ -3,10 +3,9 @@
     <div class="row justify-content-center pt-4">
       <div class="col-12 col-lg-10">
         <div class="hero-section text-center py-5">
-      <h1 class="growstudio-title mb-4">{{events.title}}</h1>
-      <p class="tagline fs-4 text-white-50">Creciendo dia a dia</p>
-    </div>
-        
+          <h1 class="growstudio-title mb-4">{{ events.title }}</h1>
+          <p class="tagline fs-4 text-white-50">Creciendo dia a dia</p>
+        </div>
 
         <!-- Grid de eventos -->
         <div class="row g-3 justify-content-center">
@@ -23,8 +22,39 @@
 </template>
 
 <script lang="ts">
+import { ref, computed } from 'vue';
 import { defineComponent } from 'vue';
 import EventCard from '../components/EventCards.vue';
+
+export const useUser Store = defineStore('user', () => {
+  const user = ref(null);
+  const loading = ref(false);
+  const error = ref(null);
+
+  const role = computed(() => user.value ? user.value.role : null);
+
+  async function fetchUser () {
+    loading.value = true;
+    error.value = null;
+    try {
+      const response = await fetch('/api/user/me/', {
+        credentials: 'include', // Enviar cookies para autenticación
+      });
+      if (!response.ok) {
+        throw new Error('No se pudo obtener el usuario');
+      }
+      const data = await response.json();
+      user.value = data;
+    } catch (err) {
+      error.value = err.message || 'Error desconocido';
+      user.value = null;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  return { user, role, loading, error, fetchUser  };
+});
 
 export default defineComponent({
   name: 'EventsView',
@@ -75,9 +105,8 @@ export default defineComponent({
 });
 </script>
 
-
 <style scoped>
-#events{
+#events {
   background: radial-gradient(circle at top, #1a1a1a, #121212);
 }
 
