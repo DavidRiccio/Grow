@@ -38,24 +38,29 @@
     </div>
 
     <!-- Mapa Section -->
-    <div class="row justify-content-center py-5 map-section">
-      <div class="col-md-10">
-        <h2 class="section-title text-center mb-5">Nuestra ubicación</h2>
-        <div class="map-container rounded-4 overflow-hidden shadow-lg">
-          <div class="map-container rounded-4 overflow-hidden shadow-lg position-relative">
-  <div class="ratio ratio-16x9">
-    <iframe 
-      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3507.4938194818415!2d-16.27500552419241!3d28.46467139168318!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xc41cd215ef7e233%3A0x6243e6fcd877a6fb!2sGrow%20Barber%20%26%20Studio!5e0!3m2!1ses!2ses!4v1739308761242!5m2!1ses!2ses" 
-      style="border:0;" 
-      allowfullscreen 
-      loading="lazy" 
-      referrerpolicy="no-referrer-when-downgrade">
-    </iframe>
+   <!-- Mapa Section -->
+<div class="row align-items-center justify-content-center py-5 map-section">
+  <div class="col-lg-5 mb-4 mb-lg-0">
+    <div class="ratio ratio-4x3 rounded-4 overflow-hidden border border-warning shadow-lg">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3507.4938194818415!2d-16.27500552419241!3d28.46467139168318!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xc41cd215ef7e233%3A0x6243e6fcd877a6fb!2sGrow%20Barber%20%26%20Studio!5e0!3m2!1ses!2ses!4v1739308761242!5m2!1ses!2ses"
+        style="border:0;"
+        allowfullscreen
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+      ></iframe>
+    </div>
+  </div>
+
+  <div class="col-lg-5 text-center text-lg-start">
+    <h2 class="section-title mb-3">Visítanos en el corazón de Santa Cruz</h2>
+    <p class="fs-5 text-light-emphasis">
+      GrowStudio está ubicado en una zona de fácil acceso con aparcamiento cercano. Ven a relajarte, renovar tu estilo y disfrutar de un ambiente único pensado para ti.
+    </p>
+    <p class="text-warning fw-semibold mt-3">¡Te esperamos con café y buena vibra!</p>
   </div>
 </div>
-        </div>
-      </div>
-    </div>
+
   </div>
 </template>
 
