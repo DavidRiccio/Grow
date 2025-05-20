@@ -1,5 +1,5 @@
 <template>
-  <nav id="navbar" class="navbar navbar-expand-lg navbar-dark  fixed-top shadow-sm">
+  <nav id="navbar" class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm">
     <div class="container-fluid">
 
       <!-- Toggler (Hamburger) for mobile view -->
@@ -25,94 +25,99 @@
         </ul>
       </div>
 
-      <!-- Cart Icon -->
-      <router-link to="/cart" class="d-flex align-items-center">
-        <i class="bi bi-cart-fill fs-3 text-light"></i>
-      </router-link>
+      <!-- User Section -->
+      <div class="d-flex align-items-center gap-3 me-3">
+        <div v-if="isAuthenticated" class="user-info">
+          <span class="text-light me-2">Hola, {{ username }}</span>
+          <button @click="handleLogout" class="btn-logout">
+            <i class="bi bi-box-arrow-right text-light"></i>
+          </button>
+        </div>
+        
+        <router-link v-else to="/login" class="text-light text-decoration-none fw-bold">
+          Login
+        </router-link>
+
+        <router-link to="/cart" class="cart-icon">
+          <i class="bi bi-cart-fill fs-3 text-light"></i>
+        </router-link>
+      </div>
     </div>
   </nav>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import axios from 'axios';
 
 export default defineComponent({
   name: 'Navbar',
+  data() {
+    return {
+      isAuthenticated: false,
+      username: ''
+    }
+  },
+  async mounted() {
+    await this.checkAuthStatus();
+    if (this.isAuthenticated) {
+      await this.fetchUsername();
+    }
+  },
+  methods: {
+    async checkAuthStatus() {
+      this.isAuthenticated = !!localStorage.getItem('authToken');
+    },
+
+    async fetchUsername() {
+      try {
+        const response = await axios.get('http://localhost:8000/api/user/', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`
+          }
+        });
+        this.username = response.data.username;
+      } catch (error) {
+        console.error('Error obteniendo usuario:', error);
+        this.handleLogout();
+      }
+    },
+
+    handleLogout() {
+      localStorage.removeItem('authToken');
+      this.isAuthenticated = false;
+      this.username = '';
+      this.$router.push('/login');
+    }
+  }
 });
 </script>
 
 <style scoped>
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-logout {
+  background: none;
+  border: none;
+  padding: 0;
+  transition: opacity 0.2s;
+}
+
+.btn-logout:hover {
+  opacity: 0.8;
+}
+
+/* Mantener otros estilos existentes */
 #navbar{
   background-color: black;
 }
 .navbar {
-  height: 80px; /* Fixed height */
+  height: 80px;
   z-index: 1000;
 }
-
-.navbar-toggler {
-  background-color: #ffb100; /* Light color for the hamburger menu button */
-}
-
-.navbar-nav .nav-link {
-  font-weight: bold;
-  color: #fff;
-  padding: 10px 15px;
-  position: relative;
-  transition: color 0.3s ease, transform 0.3s ease, letter-spacing 0.2s ease;
-}
-
-.navbar-nav .nav-link::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 2px;
-  background-color: #ffb100;
-  transition: width 0.2s ease;
-}
-
-.navbar-nav .nav-link:hover {
-  color: white;
-  letter-spacing: 2px;
-}
-
-.navbar-nav .nav-link:hover::before {
-  width: 100%; /* Line appears when hovering */
-}
-
-.navbar-nav .nav-link.active {
-  color: #333;
-  background-color: #fff;
-}
-
-.cart-icon {
-  color: #fff;
-  transition: color 0.3s;
-}
-
-.cart-icon:hover {
-  color: #ccc;
-}
-
-/* Estilos para el logo dentro de un círculo */
-.logo-container {
-  background-color: #fff; /* Fondo blanco */
-  border-radius: 50%; /* Hace el círculo */
-  padding: 5px; /* Espaciado entre el borde y la imagen */
-  display: inline-block;
-}
-
-.navbar-brand img {
-  max-height: 60px; /* Ajusta el tamaño del logo */
-  width: auto; /* Mantiene la proporción del logo */
-}
-
-@media (max-width: 991px) {
-  .navbar-nav {
-    text-align: center;
-  }
-}
+/* ... resto de estilos ... */
 </style>

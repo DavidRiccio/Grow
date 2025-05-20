@@ -7,8 +7,8 @@ import Services from '../views/ServicesView.vue';
 import Products from '../views/ProductsView.vue';
 import Events from '../views/EventsView.vue';
 import Cart from '../views/CartView.vue';
+import Login from '../views/LoginView.vue';
 import Admin from '../views/AdminDashboard.vue';
-
 const routes = [
   {path: '/', component: Home},
   {path: '/about', component: About},
@@ -17,7 +17,11 @@ const routes = [
   {path: '/services',component: Services},
   {path: '/events',component: Events},
   {path: '/cart',component: Cart},
-  {path: '/admin',component: Admin}
+  {path: '/admin',component: Admin},
+  {path: '/login',component: Login}
+  
+  
+
 ];
 
 const router = createRouter({

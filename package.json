@@ -13,12 +13,14 @@
     "lint": "eslint . --fix"
   },
   "dependencies": {
+    "@types/jwt-decode": "^3.1.0",
     "axios": "^1.9.0",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "bootstrap5": "^1.1.9",
     "chart.js": "^4.4.9",
     "firebase": "^11.3.0",
+    "jwt-decode": "^4.0.0",
     "pinia": "^2.3.1",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
