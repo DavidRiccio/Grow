@@ -11,10 +11,22 @@
           <label>Contraseña:</label>
           <input type="password" v-model="form.password" required>
         </div>
+        <div class="form-group">
+          <label>Nombre:</label>
+          <input type="text" v-model="form.first_name" required>
+        </div>
+        <div class="form-group">
+          <label>Apellido:</label>
+          <input type="text" v-model="form.last_name" required>
+        </div>
+        <div class="form-group">
+          <label>email:</label>
+          <input type="email" v-model="form.email" required>
+        </div>
 
+  
         <button type="submit" class="btn-login">Ingresar</button>
         
-        <router-link to="/signup" class="nav-link mt-3"><button type="submit" class="btn-login">Registrate</button></router-link>
         <div v-if="errorMessage" class="error-message">
           {{ errorMessage }}
         </div>
@@ -22,51 +34,40 @@
     </div>
   </template>
   
-  <script lang="ts">
-import { defineComponent } from 'vue';
-import axios, { AxiosError } from 'axios';
-import { useAuthStore } from '../stores/auth';
-
-interface LoginForm {
-  username: string;
-  password: string;
-}
-
-interface ResponseData {
-  token: string;
-  message?: string;
-}
-
-export default defineComponent({
-  data() {
-    return {
-      form: {
-        username: '',
-        password: ''
-      } as LoginForm,
-      errorMessage: ''
-    };
-  },
-  methods: {
-    async handleLogin(): Promise<void> {
-      try {
-        const response = await axios.post<ResponseData>(
-          'http://localhost:8000/login/', 
-          this.form
-        );
-        
-        const authStore = useAuthStore();
-        authStore.setToken(response.data.token);
-        
-        this.$router.push('/');
-        
-      } catch (error) {
-        const axiosError = error as AxiosError<ResponseData>;
-        this.errorMessage = axiosError.response?.data?.message || 'Error en el login';
+  <script>
+  import axios from 'axios';
+  
+  export default {
+    data() {
+      return {
+        form: {
+          username: '',
+          password: '',
+          first_name:'',
+          last_name:'',
+          email:''
+        },
+        errorMessage: ''
       }
-    }
+    },
+    methods: {
+        async handleLogin() {
+  try {
+    const response = await axios.post('http://localhost:8000/signup/', this.form);
+    
+    // Guardar token y actualizar estado
+    localStorage.setItem('authToken', response.data.token);
+    
+    // Actualizar navbar sin recargar
+    this.$root.$emit('update-auth-status'); // Nuevo evento
+    
+    // Redirigir a home
+    this.$router.push('/login');
+    
+  } catch (error) {
+    this.errorMessage = error.response?.data?.message || 'Error en el login';
   }
-});
+        }}}
 </script>
   
   <style scoped>

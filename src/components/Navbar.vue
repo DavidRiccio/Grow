@@ -27,9 +27,9 @@
 
       <!-- User Section -->
       <div class="d-flex align-items-center gap-3 me-3">
-        <div v-if="isAuthenticated" class="user-info">
-          <span class="text-light me-2">Hola, {{ username }}</span>
-          <button @click="handleLogout" class="btn-logout">
+        <div v-if="userStore.isAuthenticated" class="user-info">
+          <span class="text-light me-2">{{ userStore.user }}</span>
+          <button @click="userStore.logout" class="btn-logout">
             <i class="bi bi-box-arrow-right text-light"></i>
           </button>
         </div>
@@ -46,49 +46,17 @@
   </nav>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import axios from 'axios';
+<script setup lang="ts">
+import { onMounted } from 'vue';
+import { useAuthStore } from '@/stores/auth';
+import { useUserStore } from '@/stores/userStore';
 
-export default defineComponent({
-  name: 'Navbar',
-  data() {
-    return {
-      isAuthenticated: false,
-      username: ''
-    }
-  },
-  async mounted() {
-    await this.checkAuthStatus();
-    if (this.isAuthenticated) {
-      await this.fetchUsername();
-    }
-  },
-  methods: {
-    async checkAuthStatus() {
-      this.isAuthenticated = !!localStorage.getItem('authToken');
-    },
+const authStore = useAuthStore();
+const userStore=useUserStore()
 
-    async fetchUsername() {
-      try {
-        const response = await axios.get('http://localhost:8000/api/user/', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('authToken')}`
-          }
-        });
-        this.username = response.data.username;
-      } catch (error) {
-        console.error('Error obteniendo usuario:', error);
-        this.handleLogout();
-      }
-    },
-
-    handleLogout() {
-      localStorage.removeItem('authToken');
-      this.isAuthenticated = false;
-      this.username = '';
-      this.$router.push('/login');
-    }
+onMounted(async () => {
+  if (authStore.isAuthenticated && !userStore.user) {
+    await userStore.fetchUser();
   }
 });
 </script>

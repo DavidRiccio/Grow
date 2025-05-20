@@ -8,6 +8,8 @@ import Products from '../views/ProductsView.vue';
 import Events from '../views/EventsView.vue';
 import Cart from '../views/CartView.vue';
 import Login from '../views/LoginView.vue';
+import Signup from '../views/SignupView.vue';
+
 import Admin from '../views/AdminDashboard.vue';
 const routes = [
   {path: '/', component: Home},
@@ -18,7 +20,9 @@ const routes = [
   {path: '/events',component: Events},
   {path: '/cart',component: Cart},
   {path: '/admin',component: Admin},
-  {path: '/login',component: Login}
+  {path: '/login',component: Login},
+  {path: '/signup',component: Signup}
+
   
   
 

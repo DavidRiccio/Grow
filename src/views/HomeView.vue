@@ -1,3 +1,4 @@
+ç
 <template>
   <div class="container-fluid presentation-page">
     <!-- Hero Section -->
@@ -66,6 +67,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+
 
 export default defineComponent({
   name: 'PresentationPage',
