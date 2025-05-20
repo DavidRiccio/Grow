@@ -1,63 +1,59 @@
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
 
-interface Product {
+export interface CartProduct {
   id: number;
   name: string;
-  cantidad: number;
-  precio: number;
   image: string;
+  price: number;
   stock: number;
+  cantidad: number;
 }
 
-interface CartState {
-  productos: Product[];
+interface State {
+  products: CartProduct[];
 }
 
-export const useCartStore = defineStore('cart', {
-  state: (): CartState => ({
-    productos: JSON.parse(localStorage.getItem('cart') || '[]'),
+export const useCartStore = defineStore("cart", {
+  state: (): State => ({
+    products: [],
   }),
+
   getters: {
-    total: (state) => state.productos.reduce((acc, producto) => acc + producto.precio * producto.cantidad, 0),
+    total(state) {
+      return state.products.reduce((acc, p) => acc + p.price * p.cantidad, 0);
+    },
   },
+
   actions: {
-    agregarProducto(producto: Product) {
-      const existingProduct = this.productos.find(p => p.id === producto.id);
-      if (existingProduct) {
-        // Incrementar la cantidad del producto existente de manera reactiva
-        existingProduct.cantidad += producto.cantidad;
+    loadCart() {
+      const saved = localStorage.getItem("cart");
+      if (saved) {
+        this.products = JSON.parse(saved);
+      }
+    },
+
+    persistCart() {
+      localStorage.setItem("cart", JSON.stringify(this.products));
+    },
+
+    addProduct(product: CartProduct) {
+      const existing = this.products.find((p) => p.id === product.id);
+      if (existing) {
+        existing.cantidad = product.cantidad;
       } else {
-        // Agregar un nuevo producto al carrito
-        this.productos.push({ ...producto, cantidad: producto.cantidad });
+        this.products.push(product);
       }
-      this.persistirCarrito();
+      this.persistCart();
     },
-    eliminarProducto(id: number) {
-      // Filtrar para eliminar solo el producto con el ID especificado
-      this.productos = this.productos.filter(producto => producto.id !== id);
-      this.persistirCarrito();
+
+    removeProduct(id: number) {
+      this.products = this.products.filter((p) => p.id !== id);
+      this.persistCart();
     },
-    actualizarCantidad(id: number, cantidad: number) {
-      const product = this.productos.find(p => p.id === id);
-      if (product) {
-        if (cantidad > 0) {
-          // Actualizar la cantidad si es válida
-          product.cantidad = cantidad;
-        } else {
-          // Eliminar el producto si la cantidad es 0
-          this.eliminarProducto(id);
-        }
-      }
-      this.persistirCarrito();
-    },
-    vaciarCarrito() {
-      // Vaciar el carrito
-      this.productos = [];
-      this.persistirCarrito();
-    },
-    persistirCarrito() {
-      // Guardar el estado del carrito en localStorage
-      localStorage.setItem('cart', JSON.stringify(this.productos));
+
+    emptyCart() {
+      this.products = [];
+      this.persistCart();
     },
   },
 });

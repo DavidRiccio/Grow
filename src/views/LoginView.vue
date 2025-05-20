@@ -1,109 +1,145 @@
 <template>
-    <div class="login-container">
-      <h2>Iniciar Sesión</h2>
-      <form @submit.prevent="handleLogin">
-        <div class="form-group">
-          <label>Username:</label>
-          <input type="text" v-model="form.username" required>
+  <div class="login-wrapper d-flex justify-content-center align-items-center">
+    <div class="card p-4 rounded-4 shadow login-card">
+      <h2 class="text-warning mb-4 text-center">Iniciar Sesión</h2>
+      <form @submit.prevent="handleLogin" novalidate>
+        <div class="mb-3">
+          <label for="username" class="form-label text-warning fw-semibold">Usuario</label>
+          <input
+            v-model="form.username"
+            type="text"
+            id="username"
+            class="form-control bg-dark text-white border-warning"
+            placeholder="Introduce tu usuario"
+            required
+          />
         </div>
-        
-        <div class="form-group">
-          <label>Contraseña:</label>
-          <input type="password" v-model="form.password" required>
+        <div class="mb-4">
+          <label for="password" class="form-label text-warning fw-semibold">Contraseña</label>
+          <input
+            v-model="form.password"
+            type="password"
+            id="password"
+            class="form-control bg-dark text-white border-warning"
+            placeholder="Introduce tu contraseña"
+            required
+          />
         </div>
-
-        <button type="submit" class="btn-login">Ingresar</button>
-        
-        <router-link to="/signup" class="nav-link mt-3"><button type="submit" class="btn-login">Registrate</button></router-link>
-        <div v-if="errorMessage" class="error-message">
-          {{ errorMessage }}
+        <div class="d-flex justify-content-between align-items-center">
+          <button type="submit" class="btn btn-warning fw-bold px-4">
+            Entrar
+          </button>
+          <router-link to="/signup" class="btn btn-outline-warning">
+            Registrarse
+          </router-link>
         </div>
       </form>
     </div>
-  </template>
-  
-  <script lang="ts">
-import { defineComponent } from 'vue';
-import axios, { AxiosError } from 'axios';
-import { useAuthStore } from '../stores/auth';
+  </div>
+</template>
 
-interface LoginForm {
-  username: string;
-  password: string;
-}
+<script setup lang="ts">
+import { reactive } from "vue";
+import { useRouter } from "vue-router";
+import { useUserStore } from "@/stores/userStore";
+import axios from "axios";
 
-interface ResponseData {
-  token: string;
-  message?: string;
-}
+const userStore = useUserStore();
+const router = useRouter();
 
-export default defineComponent({
-  data() {
-    return {
-      form: {
-        username: '',
-        password: ''
-      } as LoginForm,
-      errorMessage: ''
-    };
-  },
-  methods: {
-    async handleLogin(): Promise<void> {
-      try {
-        const response = await axios.post<ResponseData>(
-          'http://localhost:8000/login/', 
-          this.form
-        );
-        
-        const authStore = useAuthStore();
-        authStore.setToken(response.data.token);
-        
-        this.$router.push('/');
-        
-      } catch (error) {
-        const axiosError = error as AxiosError<ResponseData>;
-        this.errorMessage = axiosError.response?.data?.message || 'Error en el login';
-      }
-    }
-  }
+const form = reactive({
+  username: "",
+  password: "",
 });
+
+const handleLogin = async () => {
+  try {
+    const response = await axios.post("http://localhost:8000/login/", form);
+    const token = response.data.token;
+    if (!token) {
+      alert("Token no recibido, login fallido");
+      return;
+    }
+    userStore.setUser({ username: form.username, token });
+    router.push("/");
+  } catch (error: any) {
+    console.error("Error en el login:", error.response?.data || error.message);
+    alert("Usuario o contraseña incorrectos.");
+  }
+};
 </script>
-  
-  <style scoped>
-  .login-container {
-    max-width: 400px;
-    margin: 2rem auto;
-    padding: 2rem;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  }
-  
-  .form-group {
-    margin-bottom: 1rem;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-  }
-  
-  .form-group input {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
-  .btn-login {
-    background-color: #ffb100;
-    color: black;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .error-message {
-    color: red;
-    margin-top: 1rem;
-  }
-  </style>
+
+<style scoped>
+.login-wrapper {
+  height: 100vh;
+  width: 100vw;
+  background: radial-gradient(circle at top left, rgba(255, 215, 0, 0.15), transparent 70%), 
+              linear-gradient(135deg, #1a1a1a 0%, #121212 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: rgba(26, 26, 26, 0.95);
+  border: 2px solid #ffd700;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+  color: white;
+  font-weight: 600;
+  border-radius: 1rem;
+}
+
+input.form-control {
+  background: #222 !important;
+  border-color: #ffd700 !important;
+  color: white !important;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input.form-control:focus {
+  border-color: #ffaa00 !important;
+  box-shadow: 0 0 8px #ffaa00 !important;
+  background: #2b2b2b !important;
+  color: white !important;
+}
+
+.form-label {
+  color: #ffd700 !important;
+  font-weight: 600;
+}
+
+.btn-warning {
+  background-color: #ffd700 !important;
+  border-color: #ffaa00 !important;
+  color: #1a1a1a !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.6) !important;
+  transition: background-color 0.3s ease;
+}
+
+.btn-warning:hover,
+.btn-warning:focus {
+  background-color: #ffaa00 !important;
+  border-color: #ffd700 !important;
+  color: #1a1a1a !important;
+}
+
+.btn-outline-warning {
+  color: #ffd700 !important;
+  border-color: #ffd700 !important;
+  font-weight: 600 !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-outline-warning:hover,
+.btn-outline-warning:focus {
+  background-color: #ffd700 !important;
+  color: #1a1a1a !important;
+}
+</style>
