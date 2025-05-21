@@ -1,4 +1,4 @@
-<!-- ProductCards.vue -->
+
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import { useCartStore } from '@/stores/cart';
@@ -33,57 +33,69 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-.card {
-  background-color: #1e1e1e;
-  color: #e0e0e0;
-  border: 1px solid #333;
-  border-radius: 0.25rem;
-}
-
-.card-img-top {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  max-height: 200px;
-  background-color: #2a2a2a;
-  padding: 0.5rem;
-}
-
-.card-body {
-  background-color: #1e1e1e;
-  color: #e0e0e0;
-}
-
-.card-title,
-.card-text {
-  margin-bottom: 0.5rem;
-}
-
-.hover-effect {
-  transition: all 0.2s ease;
-  border: 1px solid #444;
-}
-
-.hover-effect:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.5) !important;
-}
-
-.btn {
-  color: #e0e0e0;
-  border-color: #ffb100;
-  background-color: transparent;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-.btn:hover {
-  background-color: #ffb100;
-  color: #1e1e1e;
-}
-
-.error {
-  color: #ff5252;
-  margin-top: 0.5rem;
-}
-</style>
+<template>
+  <div 
+    class="card h-100 shadow-sm border-dark bg-dark text-light"
+    role="article"
+    aria-labelledby="productTitle"
+    :aria-describedby="'desc_' + producto.id"
+  >
+    <div class="card-img-top p-2 bg-dark-secondary">
+      <img 
+        :src="producto.imagen"
+        :alt="producto.nombre"
+        class="img-fluid mx-auto d-block"
+        style="max-height: 200px;"
+        role="img"
+      >
+    </div>
+    
+    <div class="card-body d-flex flex-column">
+      <h3 
+        id="productTitle"
+        class="card-title h5 mb-3"
+      >
+        {{ producto.nombre }}
+      </h3>
+      
+      <p 
+        :id="'desc_' + producto.id"
+        class="card-text mb-4 text-muted"
+        v-text="producto.descripcion"
+      ></p>
+      
+      <div class="mt-auto">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span class="h4 mb-0 text-warning">
+            {{ producto.price.toFixed(2) }}€
+          </span>
+          <span 
+            v-if="producto.stock > 0"
+            class="badge bg-success"
+          >
+            Disponible
+          </span>
+        </div>
+        
+        <button
+          @click="agregarAlCarrito"
+          class="btn btn-outline-warning w-100"
+          :disabled="producto.stock < 1"
+          :aria-label="'Añadir ' + producto.nombre + ' al carrito'"
+          role="button"
+        >
+          Agregar al carrito
+        </button>
+        
+        <div 
+          v-if="error"
+          class="alert alert-danger mt-3 mb-0"
+          role="alert"
+          aria-live="assertive"
+        >
+          {{ error }}
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

@@ -1,76 +1,133 @@
 <template>
-  <div class="cart-page d-flex flex-column justify-content-center align-items-center">
-    <h1 class="section-title text-center mb-5">Carrito de Compras</h1>
-    <div v-if="cartProducts.length === 0" class="text-center mt-5">
-      <p class="text-light fs-4">Tu carrito está vacío. ¡Añade productos!</p>
-      <a href="/products" class="btn btn-warning mt-3">Ir a Productos</a>
-    </div>
-    <div v-else class="w-100 px-3 px-md-5">
-      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        <div class="col" v-for="producto in cartProducts" :key="producto.id">
-          <div class="card cart-product-card h-100 shadow border-0">
-            <img
-              :src="producto.image"
-              :alt="producto.name"
-              class="card-img-top img-fluid"
-            />
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title text-warning fw-bold">{{ producto.name }}</h5>
-              <p class="card-text text-light fs-6">
-                <strong>Precio:</strong> €{{ producto.price }}
-              </p>
-              <!-- Controles de cantidad -->
-              <div class="d-flex align-items-center mb-3">
-                <button 
-                  class="btn btn-outline-warning py-1 px-3"
-                  @click="actualizarCantidad(producto.id, producto.cantidad - 1)"
-                  :disabled="producto.cantidad <= 1"
-                >
-                  -
-                </button>
-                <input
-                  type="number"
-                  class="form-control text-center mx-2 bg-transparent text-light"
-                  style="width: 60px;"
-                  v-model.number="producto.cantidad"
-                  min="1"
-                  :max="producto.stock"
-                  @change="actualizarCantidad(producto.id, producto.cantidad)"
+  <main class="bg-dark text-white py-5 min-vh-100" aria-labelledby="cart-title">
+    <div class="container">
+      <h1 id="cart-title" class="text-warning fw-bold mb-5 text-center display-5" style="font-family: Kanit, sans-serif;">
+        Carrito de Compras
+      </h1>
+
+      <!-- Carrito vacío -->
+      <div v-if="cartProducts.length === 0" class="text-center my-5 py-4 mx-auto" style="max-width: 500px;">
+        <div class="mb-3">
+          <i class="bi bi-cart text-warning display-1" aria-hidden="true"></i>
+        </div>
+        <p class="fs-4 text-light mb-4">Tu carrito está vacío. ¡Añade productos!</p>
+        <a href="/products" class="btn btn-warning px-4 py-2 fw-semibold" 
+           role="button" aria-label="Ir a la sección de productos">
+          <i class="bi bi-bag-plus me-2" aria-hidden="true"></i>Ir a Productos
+        </a>
+      </div>
+
+      <!-- Carrito con productos -->
+      <div v-else>
+        <!-- Lista de productos -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+          <div class="col" v-for="producto in cartProducts" :key="producto.id">
+            <article class="card h-100 bg-dark bg-opacity-75 border border-secondary border-opacity-25 shadow rounded-4">
+              <div class="position-relative">
+                <img
+                  :src="producto.image"
+                  :alt="producto.name"
+                  class="card-img-top rounded-top-4"
+                  style="height: 220px; object-fit: cover;"
+                  loading="lazy"
                 />
+                <span class="position-absolute top-0 end-0 m-2 badge bg-warning text-dark fw-bold">
+                  €{{ producto.price }}
+                </span>
+              </div>
+              
+              <div class="card-body d-flex flex-column">
+                <h2 class="card-title h5 text-warning fw-bold mb-3">{{ producto.name }}</h2>
+                
+                <div class="d-flex align-items-center bg-dark bg-opacity-50 p-2 rounded-3 mb-3">
+                  <button 
+                    class="btn btn-outline-warning btn-sm"
+                    @click="actualizarCantidad(producto.id, producto.cantidad - 1)"
+                    :disabled="producto.cantidad <= 1"
+                    aria-label="Disminuir cantidad"
+                  >
+                    <i class="bi bi-dash" aria-hidden="true"></i>
+                  </button>
+                  
+                  <input
+                    type="number"
+                    class="form-control form-control-sm mx-2 text-center bg-transparent text-white border-0"
+                    style="max-width: 60px; -moz-appearance: textfield;"
+                    v-model.number="producto.cantidad"
+                    min="1"
+                    :max="producto.stock"
+                    :aria-label="`Cantidad: ${producto.cantidad} de ${producto.name}`"
+                    @change="actualizarCantidad(producto.id, producto.cantidad)"
+                  />
+                  
+                  <button 
+                    class="btn btn-outline-warning btn-sm"
+                    @click="actualizarCantidad(producto.id, producto.cantidad + 1)"
+                    :disabled="producto.cantidad >= producto.stock"
+                    aria-label="Aumentar cantidad"
+                  >
+                    <i class="bi bi-plus" aria-hidden="true"></i>
+                  </button>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mt-auto">
+                  <span class="text-light">
+                    Subtotal: <strong class="text-warning">€{{ (producto.price * producto.cantidad).toFixed(2) }}</strong>
+                  </span>
+                  
+                  <button
+                    class="btn btn-outline-danger btn-sm"
+                    @click="eliminarDelCarrito(producto.id)"
+                    aria-label="Eliminar producto del carrito"
+                  >
+                    <i class="bi bi-trash me-1" aria-hidden="true"></i>
+                    <span class="d-none d-sm-inline">Eliminar</span>
+                  </button>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- Resumen y acciones del carrito -->
+        <div class="bg-dark bg-opacity-75 rounded-4 p-4 shadow-lg mt-4 border-start border-warning border-4 border-opacity-50">
+          <div class="row align-items-center">
+            <div class="col-md-6 mb-3 mb-md-0">
+              <h3 class="h4 text-warning mb-2">Resumen del carrito</h3>
+              <div class="d-flex justify-content-between">
+                <span class="text-white-50">Productos:</span>
+                <span class="text-white">{{ cartProducts.length }}</span>
+              </div>
+              <div class="d-flex justify-content-between fw-bold fs-5 mt-2">
+                <span class="text-white">Total:</span>
+                <span class="text-warning">€{{ total }}</span>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                 <button 
-                  class="btn btn-outline-warning py-1 px-3"
-                  @click="actualizarCantidad(producto.id, producto.cantidad + 1)"
-                  :disabled="producto.cantidad >= producto.stock"
+                  class="btn btn-outline-danger" 
+                  @click="vaciarCarrito"
+                  aria-label="Vaciar todo el carrito"
                 >
-                  +
+                  <i class="bi bi-trash me-2" aria-hidden="true"></i>Vaciar
+                </button>
+                
+                <button 
+                  class="btn btn-success" 
+                  @click="procesarPago"
+                  aria-label="Proceder con el pago"
+                >
+                  <i class="bi bi-credit-card me-2" aria-hidden="true"></i>Pagar Ahora
                 </button>
               </div>
-
-              <!-- Botón de eliminar -->
-              <button
-                class="btn btn-danger fw-bold mt-auto d-flex align-items-center justify-content-center gap-2"
-                @click="eliminarDelCarrito(producto.id)"
-              >
-                <i class="bi bi-trash"></i>
-                <span>Eliminar</span>
-              </button>
             </div>
           </div>
         </div>
       </div>
-      <div class="text-center my-5">
-        <h3 class="text-warning mb-4">Total: €{{ total }}</h3>
-        <div class="d-flex justify-content-center gap-3 flex-wrap">
-          <button class="btn btn-danger fw-bold" @click="vaciarCarrito">
-            Vaciar Carrito
-          </button>
-          <button class="btn btn-success fw-bold" @click="procesarPago">
-            Pagar Ahora
-          </button>
-        </div>
-      </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">
@@ -150,65 +207,24 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
-.cart-page {
-  background: radial-gradient(circle at top, #1a1a1a, #121212);
-  color: white;
-  min-height: 100vh;
-  width: 100vw;
-  padding: 2rem 0;
-  overflow-y: auto;
-}
-
-.cart-product-card {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 1rem;
-  overflow: hidden;
-  transition: transform 0.3s ease, background 0.3s ease;
-}
-
-.cart-product-card:hover {
-  transform: translateY(-5px);
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
-
-.card-img-top {
-  max-height: 250px;
-  object-fit: cover;
-  border-bottom: 2px solid rgba(255, 215, 0, 0.3);
-}
-
-.section-title {
-  font-family: "Kanit", sans-serif;
-  font-size: 2.5rem;
-  text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-  width: 100%;
-}
-
-.btn-outline-warning {
-  border-width: 2px;
-  transition: all 0.3s ease;
-}
-
-.btn-outline-warning:hover {
-  background: rgba(255, 215, 0, 0.1);
-}
-
+<style>
+/* Estilos mínimos para características que no se pueden lograr con Bootstrap */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-input[type="number"] {
-  -moz-appearance: textfield;
-  border: 2px solid rgba(255, 215, 0, 0.3);
-  border-radius: 0.5rem;
+/* Fondo degradado para mantener la paleta de colores existente */
+main {
+  background: radial-gradient(circle at top, #1a1a1a, #121212);
 }
 
-input[type="number"]:focus {
-  box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.25);
-  border-color: #ffd700;
+/* Regla para dispositivos móviles - el borde cambia de posición */
+@media (max-width: 767.98px) {
+  .border-start.border-warning {
+    border-left: none !important;
+    border-top: 4px solid rgba(255, 215, 0, 0.5) !important;
+  }
 }
 </style>
