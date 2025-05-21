@@ -16,6 +16,7 @@ interface ProductState {
   error: string | null;
 }
 
+
 export const useProductStore = defineStore('products', {
   state: (): ProductState => ({
     products: [],
@@ -42,5 +43,6 @@ export const useProductStore = defineStore('products', {
           this.loading = false;
         }
       },
+      
   },
 });

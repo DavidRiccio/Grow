@@ -19,14 +19,38 @@
               <p class="card-text text-light fs-6">
                 <strong>Precio:</strong> €{{ producto.price }}
               </p>
-              <p class="card-text text-light fs-6">
-                <strong>Cantidad:</strong> {{ producto.cantidad }}
-              </p>
+              <!-- Controles de cantidad -->
+              <div class="d-flex align-items-center mb-3">
+                <button 
+                  class="btn btn-outline-warning py-1 px-3"
+                  @click="actualizarCantidad(producto.id, producto.cantidad - 1)"
+                  :disabled="producto.cantidad <= 1"
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  class="form-control text-center mx-2 bg-transparent text-light"
+                  style="width: 60px;"
+                  v-model.number="producto.cantidad"
+                  min="1"
+                  @change="actualizarCantidad(producto.id, producto.cantidad)"
+                />
+                <button 
+                  class="btn btn-outline-warning py-1 px-3"
+                  @click="actualizarCantidad(producto.id, producto.cantidad + 1)"
+                >
+                  +
+                </button>
+              </div>
+
+              <!-- Botón de eliminar -->
               <button
-                class="btn btn-danger fw-bold mt-auto"
+                class="btn btn-danger fw-bold mt-auto d-flex align-items-center justify-content-center gap-2"
                 @click="eliminarDelCarrito(producto.id)"
               >
-                Eliminar
+                <i class="bi bi-trash"></i>
+                <span>Eliminar</span>
               </button>
             </div>
           </div>
@@ -48,15 +72,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import axios from "axios";
 import { useCartStore } from "@/stores/cart";
 
 const cartStore = useCartStore();
 
+// Computed properties
 const cartProducts = computed(() => cartStore.products);
 const total = computed(() => cartStore.total);
 
+// Funciones de interacción con el carrito
 const eliminarDelCarrito = (id: number) => {
   cartStore.removeProduct(id);
 };
@@ -65,7 +91,14 @@ const vaciarCarrito = () => {
   cartStore.emptyCart();
 };
 
-const token = localStorage.getItem('token') // o donde guardes el token
+// Actualizar cantidad de productos
+const actualizarCantidad = (id: number, nuevaCantidad: number) => {
+  if (nuevaCantidad < 1) return;
+  cartStore.updateQuantity(id, nuevaCantidad);
+};
+
+// Lógica para procesar el pago
+const token = localStorage.getItem("token"); // O donde guardes el token
 
 const procesarPago = async () => {
   if (cartProducts.value.length === 0) {
@@ -74,7 +107,7 @@ const procesarPago = async () => {
   }
 
   try {
-    const productsToSend = cartProducts.value.map(p => ({
+    const productsToSend = cartProducts.value.map((p) => ({
       id: p.id,
       quantity: p.cantidad,
     }));
@@ -101,10 +134,11 @@ const procesarPago = async () => {
   }
 };
 
-
-
+// Cargar el carrito desde el localStorage al montar el componente
+onMounted(() => {
+  cartStore.loadCart();
+});
 </script>
-
 
 <style scoped>
 .cart-page {
@@ -142,11 +176,29 @@ const procesarPago = async () => {
   width: 100%;
 }
 
-.btn-danger:hover {
-  background-color: #ff4d4d;
+.btn-outline-warning {
+  border-width: 2px;
+  transition: all 0.3s ease;
 }
 
-.btn-success:hover {
-  background-color: #28a745;
+.btn-outline-warning:hover {
+  background: rgba(255, 215, 0, 0.1);
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 0.5rem;
+}
+
+input[type="number"]:focus {
+  box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.25);
+  border-color: #ffd700;
 }
 </style>

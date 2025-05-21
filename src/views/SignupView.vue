@@ -1,7 +1,7 @@
 <template>
   <div class="signup-wrapper d-flex justify-content-center align-items-center">
     <div class="card p-4 rounded-4 shadow signup-card">
-      <h2 class="text-warning mb-4 text-center">Iniciar Sesión</h2>
+      <h2 class="text-warning mb-4 text-center">Registrate</h2>
       <form @submit.prevent="handleLogin" novalidate>
         <div class="mb-3">
           <label for="username" class="form-label text-warning fw-semibold">Username:</label>
