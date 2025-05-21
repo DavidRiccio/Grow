@@ -26,8 +26,8 @@
           />
         </div>
         <div class="d-flex justify-content-between align-items-center">
-          <button type="submit" class="btn btn-warning fw-bold px-4">
-            Entrar
+          <button type="submit" class="btn btn-warning fw-bold px-4" :disabled="isLoading">
+            {{ isLoading ? 'Procesando...' : 'Entrar' }}
           </button>
           <router-link to="/signup" class="btn btn-outline-warning">
             Registrarse
@@ -39,13 +39,14 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/userStore";
 import axios from "axios";
 
 const userStore = useUserStore();
 const router = useRouter();
+const isLoading = ref(false);
 
 const form = reactive({
   username: "",
@@ -53,18 +54,30 @@ const form = reactive({
 });
 
 const handleLogin = async () => {
+  if (!form.username || !form.password) {
+    alert("Por favor, introduce usuario y contraseña");
+    return;
+  }
+  
   try {
+    isLoading.value = true;
     const response = await axios.post("http://localhost:8000/login/", form);
     const token = response.data.token;
+    
     if (!token) {
       alert("Token no recibido, login fallido");
       return;
     }
+    
     userStore.setUser({ username: form.username, token });
-    router.push("/");
+    
+    window.location.href = "/";
+    
   } catch (error: any) {
     console.error("Error en el login:", error.response?.data || error.message);
     alert("Usuario o contraseña incorrectos.");
+  } finally {
+    isLoading.value = false;
   }
 };
 </script>
@@ -128,6 +141,11 @@ input.form-control:focus {
   background-color: #ffaa00 !important;
   border-color: #ffd700 !important;
   color: #1a1a1a !important;
+}
+
+.btn-warning:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .btn-outline-warning {

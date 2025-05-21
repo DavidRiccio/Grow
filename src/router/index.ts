@@ -28,7 +28,7 @@ const routes = [
   {
     path: '/reserva',
     name: 'Reserva',
-    component: Reserva,
+    component: Reserva,meta: { requiresAuth: true }
   },
 ];
 
