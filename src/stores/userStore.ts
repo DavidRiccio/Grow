@@ -3,24 +3,26 @@ import { defineStore } from "pinia";
 // Store para usuario
 export const useUserStore = defineStore("user", {
   state: () => ({
-    user: null as { username: string } | null,
+    user: null as { username: string; role: string } | null, 
     token: null as string | null,
     isAuthenticated: false,
   }),
   actions: {
-    setUser(payload: { username: string; token: string }) {
-      this.user = { username: payload.username };
+    setUser (payload: { username: string; token: string; role: string }) { 
+      this.user = { username: payload.username, role: payload.role }; 
       this.token = payload.token;
       this.isAuthenticated = true;
       localStorage.setItem("token", payload.token);
       localStorage.setItem("username", payload.username);
+      localStorage.setItem("role", payload.role); 
     },
     initialize() {
       const token = localStorage.getItem("token");
       const username = localStorage.getItem("username");
-      if (token && username) {
+      const role = localStorage.getItem("role"); 
+      if (token && username && role) {
         this.token = token;
-        this.user = { username };
+        this.user = { username, role }; 
         this.isAuthenticated = true;
       }
     },
@@ -30,6 +32,7 @@ export const useUserStore = defineStore("user", {
       this.isAuthenticated = false;
       localStorage.removeItem("token");
       localStorage.removeItem("username");
+      localStorage.removeItem("role"); 
     },
   },
 });

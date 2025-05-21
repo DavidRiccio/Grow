@@ -27,11 +27,9 @@
         </div>
         <div class="d-flex justify-content-between align-items-center">
           <button type="submit" class="btn btn-warning fw-bold px-4" :disabled="isLoading">
-            {{ isLoading ? 'Procesando...' : 'Entrar' }}
+            {{ isLoading ? "Procesando..." : "Entrar" }}
           </button>
-          <router-link to="/signup" class="btn btn-outline-warning">
-            Registrarse
-          </router-link>
+          <router-link to="/signup" class="btn btn-outline-warning"> Registrarse </router-link>
         </div>
       </form>
     </div>
@@ -58,21 +56,26 @@ const handleLogin = async () => {
     alert("Por favor, introduce usuario y contraseña");
     return;
   }
-  
+
   try {
     isLoading.value = true;
     const response = await axios.post("http://localhost:8000/login/", form);
     const token = response.data.token;
-    
+    const role = response.data.role;
+
     if (!token) {
       alert("Token no recibido, login fallido");
       return;
     }
-    
-    userStore.setUser({ username: form.username, token });
-    
+
+    if (!role) {
+      alert("Rol no recibido, login fallido");
+      return;
+    }
+
+    userStore.setUser({ username: form.username, token, role });
+
     window.location.href = "/";
-    
   } catch (error: any) {
     console.error("Error en el login:", error.response?.data || error.message);
     alert("Usuario o contraseña incorrectos.");
@@ -86,15 +89,15 @@ const handleLogin = async () => {
 .login-wrapper {
   height: 100vh;
   width: 100vw;
-  background: radial-gradient(circle at top left, rgba(255, 215, 0, 0.15), transparent 70%), 
-              linear-gradient(135deg, #1a1a1a 0%, #121212 100%);
+  background: radial-gradient(circle at top left, rgba(255, 215, 0, 0.15), transparent 70%),
+    linear-gradient(135deg, #1a1a1a 0%, #121212 100%);
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 1rem;
   box-sizing: border-box;
   overflow: hidden;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .login-card {

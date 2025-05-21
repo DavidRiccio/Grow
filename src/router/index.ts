@@ -10,6 +10,7 @@ import Login from '../views/LoginView.vue';
 import Signup from '../views/SignupView.vue';
 import Reserva from '../views/BookingForm.vue'; 
 import Admin from '../views/AdminDashboard.vue';
+import { useUserStore } from '@/stores/userStore'; // Importa el store de usuario
 
 const routes = [
   { path: '/', component: Home },
@@ -18,17 +19,20 @@ const routes = [
   { path: '/products', component: Products },
   { path: '/services', component: Services },
   { path: '/events', component: Events },
-  {path: '/eventos/:id',
+  {
+    path: '/eventos/:id',
     name: 'EventDetail',
-    component: () => import('@/views/EventDetail.vue')},
+    component: () => import('@/views/EventDetail.vue')
+  },
   { path: '/cart', component: Cart },
-  { path: '/admin', component: Admin },
+  { path: '/admin', component: Admin, meta: { requiresAuth: true, requiresRole: 'A' } }, // Agregar meta para rol
   { path: '/login', component: Login },
   { path: '/signup', component: Signup },
   {
     path: '/reserva',
     name: 'Reserva',
-    component: Reserva,meta: { requiresAuth: true }
+    component: Reserva,
+    meta: { requiresAuth: true }
   },
 ];
 
@@ -44,10 +48,20 @@ const router = createRouter({
   }, 
 });
 
-
+// Guardias de navegación
 router.beforeEach((to, from, next) => {
-  window.scrollTo(0, 0); 
-  next();
+  const userStore = useUserStore(); // Obtener el store de usuario
+  const requiresAuth = to.meta.requiresAuth;
+  const requiresRole = to.meta.requiresRole;
+
+  // Verificar si la ruta requiere autenticación
+  if (requiresAuth && !userStore.isAuthenticated) {
+    next({ path: '/login' }); // Redirigir a login si no está autenticado
+  } else if (requiresRole && userStore.user?.role !== requiresRole) {
+    next({ path: '/' }); // Redirigir a inicio si no tiene el rol adecuado
+  } else {
+    next(); // Permitir el acceso
+  }
 });
 
 export default router;

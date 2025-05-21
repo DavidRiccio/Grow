@@ -3,7 +3,6 @@
     <div class="row">
       <div class="col-12 px-0">
         <Navbar />
-        <AdminBar />
       </div>
     </div>
 
@@ -22,25 +21,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from 'vue';
-import { useUserStore } from './stores/userStore.ts';
-import Navbar from './components/Navbar.vue';
-import BaseFooter from './components/Footer.vue';
-import AdminBar from './views/AdminBar.vue';
+import { defineComponent, onMounted } from "vue";
+import { useUserStore } from "./stores/userStore.ts";
+import Navbar from "./components/Navbar.vue";
+import BaseFooter from "./components/Footer.vue";
 
 export default defineComponent({
-  name: 'App',
+  name: "App",
   components: {
     Navbar,
     BaseFooter,
-    AdminBar,
   },
   setup() {
     const userStore = useUserStore();
 
     onMounted(() => {
       if (!userStore.user) {
-        userStore.fetchUser ();
+        userStore.fetchUser();
       }
     });
   },
