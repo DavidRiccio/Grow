@@ -23,7 +23,6 @@ export const useCartStore = defineStore("cart", {
   },
 
   actions: {
-    // Cargar el carrito al inicializar el store
     loadCart() {
       try {
         const saved = localStorage.getItem("cart");
@@ -33,15 +32,28 @@ export const useCartStore = defineStore("cart", {
       }
     },
 
-    // Guardar cambios en el localStorage
     persistCart() {
       localStorage.setItem("cart", JSON.stringify(this.products));
     },
 
     addProduct(product: CartProduct) {
-      const existing = this.products.find((p) => p.id === product.id);
-      existing ? (existing.cantidad += product.cantidad) : this.products.push(product);
-      this.persistCart();
+      const existingProduct = this.products.find((p) => p.id === product.id);
+      if (existingProduct) {
+        // Sumar 1 solo si no supera el stock
+        if (existingProduct.cantidad < existingProduct.stock) {
+          existingProduct.cantidad += 1;
+          this.persistCart();
+        } else {
+          alert("No puedes añadir más productos, stock insuficiente");
+        }
+      } else {
+        if (product.stock > 0) {
+          this.products.push({ ...product, cantidad: 1 });
+          this.persistCart();
+        } else {
+          alert("Producto sin stock");
+        }
+      }
     },
 
     removeProduct(id: number) {
@@ -52,7 +64,14 @@ export const useCartStore = defineStore("cart", {
     updateQuantity(id: number, cantidad: number) {
       const product = this.products.find((p) => p.id === id);
       if (product) {
-        product.cantidad = Math.max(1, cantidad);
+        if (cantidad > product.stock) {
+          alert("No puedes seleccionar una cantidad mayor al stock disponible");
+          product.cantidad = product.stock;
+        } else if (cantidad < 1) {
+          product.cantidad = 1;
+        } else {
+          product.cantidad = cantidad;
+        }
         this.persistCart();
       }
     },
@@ -63,7 +82,6 @@ export const useCartStore = defineStore("cart", {
     },
   },
 
-  // Hook para cargar el carrito al inicializar el store
   hydrate() {
     this.loadCart();
   },

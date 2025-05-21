@@ -34,11 +34,13 @@
                   style="width: 60px;"
                   v-model.number="producto.cantidad"
                   min="1"
+                  :max="producto.stock"
                   @change="actualizarCantidad(producto.id, producto.cantidad)"
                 />
                 <button 
                   class="btn btn-outline-warning py-1 px-3"
                   @click="actualizarCantidad(producto.id, producto.cantidad + 1)"
+                  :disabled="producto.cantidad >= producto.stock"
                 >
                   +
                 </button>
@@ -78,11 +80,9 @@ import { useCartStore } from "@/stores/cart";
 
 const cartStore = useCartStore();
 
-// Computed properties
 const cartProducts = computed(() => cartStore.products);
 const total = computed(() => cartStore.total);
 
-// Funciones de interacción con el carrito
 const eliminarDelCarrito = (id: number) => {
   cartStore.removeProduct(id);
 };
@@ -91,14 +91,25 @@ const vaciarCarrito = () => {
   cartStore.emptyCart();
 };
 
-// Actualizar cantidad de productos
 const actualizarCantidad = (id: number, nuevaCantidad: number) => {
-  if (nuevaCantidad < 1) return;
+  const product = cartProducts.value.find((p) => p.id === id);
+
+  if (!product) return;
+
+  if (nuevaCantidad > product.stock) {
+    alert(`Solo puedes agregar hasta ${product.stock} unidades de este producto.`);
+    nuevaCantidad = product.stock;
+  }
+
+  if (nuevaCantidad < 1) {
+    alert("La cantidad mínima es 1.");
+    return;
+  }
+
   cartStore.updateQuantity(id, nuevaCantidad);
 };
 
-// Lógica para procesar el pago
-const token = localStorage.getItem("token"); // O donde guardes el token
+const token = localStorage.getItem("token");
 
 const procesarPago = async () => {
   if (cartProducts.value.length === 0) {
@@ -134,7 +145,6 @@ const procesarPago = async () => {
   }
 };
 
-// Cargar el carrito desde el localStorage al montar el componente
 onMounted(() => {
   cartStore.loadCart();
 });

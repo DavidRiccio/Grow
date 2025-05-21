@@ -1,14 +1,11 @@
 <template>
   <nav id="navbar" class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm">
     <div class="container-fluid d-flex justify-content-between align-items-center w-100">
-
-      <!-- Toggler izquierda -->
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <!-- Menú centrado -->
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav mx-auto">
           <li class="nav-item">
@@ -26,7 +23,6 @@
         </ul>
       </div>
 
-      <!-- Usuario y carrito derecha -->
       <div class="d-flex align-items-center gap-3 me-3">
         <div v-if="userStore.isAuthenticated" class="user-info">
           <span class="text-light me-2">{{ userStore.user?.username }}</span>
@@ -67,8 +63,9 @@ onMounted(async () => {
 }
 
 .navbar {
-  height: 80px; /* Fixed height */
+  height: 80px;
   z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .user-info {
@@ -78,19 +75,20 @@ onMounted(async () => {
 }
 
 .navbar-toggler {
-  background-color: #ffb100; /* Light color for the hamburger menu button */
+  background-color: #ffb100;
 }
 
 .btn-logout {
   background: none;
   border: none;
   padding: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.3s, transform 0.2s;
   cursor: pointer;
 }
 
 .btn-logout:hover {
   opacity: 0.8;
+  transform: scale(1.1);
 }
 
 .navbar-nav .nav-link {
@@ -101,42 +99,43 @@ onMounted(async () => {
   transition: color 0.3s ease, transform 0.3s ease, letter-spacing 0.2s ease;
 }
 
-.navbar-nav .nav-link::before {
+.navbar-nav .nav-link::after {
   content: '';
   position: absolute;
-  bottom: 0;
+  bottom: -5px;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
   height: 2px;
   background-color: #ffb100;
-  transition: width 0.2s ease;
+  transition: width 0.3s ease-in-out;
 }
 
 .navbar-nav .nav-link:hover {
   color: white;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
 }
 
-.navbar-nav .nav-link:hover::before {
-  width: 100%; /* Line appears when hovering */
+.navbar-nav .nav-link:hover::after {
+  width: 100%;
 }
 
 .navbar-nav .nav-link.active {
   color: #333;
   background-color: #fff;
+  border-radius: 4px;
 }
 
 .cart-icon {
   color: #fff;
-  transition: color 0.3s;
+  transition: color 0.3s, transform 0.2s;
 }
 
 .cart-icon:hover {
-  color: #ccc;
+  color: #ffb100;
+  transform: scale(1.1);
 }
 
-/* Responsive tweaks */
 @media (max-width: 991px) {
   .navbar-nav {
     text-align: center;
