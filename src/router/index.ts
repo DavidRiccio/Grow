@@ -10,7 +10,8 @@ import Login from '../views/LoginView.vue';
 import Signup from '../views/SignupView.vue';
 import Reserva from '../views/BookingForm.vue'; 
 import Admin from '../views/AdminDashboard.vue';
-import { useUserStore } from '@/stores/userStore'; // Importa el store de usuario
+import Profile from '@/views/ProfileView.vue';
+import { useUserStore } from '@/stores/userStore'; 
 
 const routes = [
   { path: '/', component: Home },
@@ -28,6 +29,7 @@ const routes = [
   { path: '/admin', component: Admin, meta: { requiresAuth: true, requiresRole: 'A' } }, // Agregar meta para rol
   { path: '/login', component: Login },
   { path: '/signup', component: Signup },
+  { path: '/profile', component: Profile },
   {
     path: '/reserva',
     name: 'Reserva',
