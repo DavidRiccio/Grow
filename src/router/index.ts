@@ -1,6 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import About from '../views/AboutView.vue';
+import { useUserStore } from '../stores/userStore';
+
+// Vistas importadas directamente
 import Home from '../views/HomeView.vue';
+import About from '../views/AboutView.vue';
 import Contact from '../views/ContactView.vue';
 import Services from '../views/ServicesView.vue';
 import Products from '../views/ProductsView.vue';
@@ -8,10 +11,10 @@ import Events from '../views/EventsView.vue';
 import Cart from '../views/CartView.vue';
 import Login from '../views/LoginView.vue';
 import Signup from '../views/SignupView.vue';
-import Reserva from '../views/BookingForm.vue'; 
+import Reserva from '../views/BookingForm.vue';
 import Admin from '../views/AdminDashboard.vue';
 import Profile from '../views/ProfileView.vue';
-import { useUserStore } from '../stores/userStore'; 
+import Payment from '../views/PaymentView.vue';
 
 const routes = [
   { path: '/', component: Home },
@@ -26,16 +29,27 @@ const routes = [
     component: () => import('../views/EventDetail.vue')
   },
   { path: '/cart', component: Cart },
-  { path: '/admin', component: Admin, meta: { requiresAuth: true, requiresRole: 'A' } }, // Agregar meta para rol
+  {
+    path: '/admin',
+    component: Admin,
+    meta: { requiresAuth: true, requiresRole: 'A' }
+  },
   { path: '/login', component: Login },
   { path: '/signup', component: Signup },
   { path: '/profile', component: Profile },
+  {
+    path: '/payment/:orderPk',
+    name: 'Payment',
+    component: Payment,
+    props: true,
+    meta: { requiresAuth: true }
+  },
   {
     path: '/reserva',
     name: 'Reserva',
     component: Reserva,
     meta: { requiresAuth: true }
-  },
+  }
 ];
 
 const router = createRouter({
@@ -45,24 +59,22 @@ const router = createRouter({
     if (savedPosition) {
       return savedPosition;
     }
-    
     return { top: 0, left: 0 };
-  }, 
+  }
 });
 
 // Guardias de navegación
 router.beforeEach((to, from, next) => {
-  const userStore = useUserStore(); // Obtener el store de usuario
+  const userStore = useUserStore();
   const requiresAuth = to.meta.requiresAuth;
   const requiresRole = to.meta.requiresRole;
 
-  // Verificar si la ruta requiere autenticación
   if (requiresAuth && !userStore.isAuthenticated) {
-    next({ path: '/login' }); // Redirigir a login si no está autenticado
+    next({ path: '/login' });
   } else if (requiresRole && userStore.user?.role !== requiresRole) {
-    next({ path: '/' }); // Redirigir a inicio si no tiene el rol adecuado
+    next({ path: '/' });
   } else {
-    next(); // Permitir el acceso
+    next();
   }
 });
 

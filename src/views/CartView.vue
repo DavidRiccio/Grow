@@ -1,230 +1,220 @@
 <template>
-  <main class="bg-dark text-white py-5 min-vh-100" aria-labelledby="cart-title">
-    <div class="container">
-      <h1 id="cart-title" class="text-warning fw-bold mb-5 text-center display-5" style="font-family: Kanit, sans-serif;">
-        Carrito de Compras
-      </h1>
+  <nav
+    class="navbar navbar-expand-lg navbar-dark fixed-top bg-black border-bottom border-dark-subtle"
+    aria-label="Navegación principal"
+  >
+    <div class="container-fluid px-3 px-lg-5">
+      <router-link
+        to="/"
+        class="navbar-brand me-0 me-lg-4 text-warning fw-bold d-flex align-items-center"
+      >
+        <span class="d-none d-lg-inline">Grow</span>
+      </router-link>
 
-      <!-- Carrito vacío -->
-      <div v-if="cartProducts.length === 0" class="text-center my-5 py-4 mx-auto" style="max-width: 500px;">
-        <div class="mb-3">
-          <i class="bi bi-cart text-warning display-1" aria-hidden="true"></i>
-        </div>
-        <p class="fs-4 text-light mb-4">Tu carrito está vacío. ¡Añade productos!</p>
-        <a href="/products" class="btn btn-warning px-4 py-2 fw-semibold" 
-           role="button" aria-label="Ir a la sección de productos">
-          <i class="bi bi-bag-plus me-2" aria-hidden="true"></i>Ir a Productos
-        </a>
+      <button
+        class="navbar-toggler border-secondary shadow-none"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Alternar navegación"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-lg-center" id="navbarNav">
+        <ul class="navbar-nav py-3 py-lg-0">
+          <li class="nav-item my-1 my-lg-0 mx-lg-2">
+            <router-link
+              to="/"
+              class="nav-link text-light fw-semibold px-3 py-2 rounded-pill text-center"
+              active-class="active"
+            >
+              <i class="bi bi-house-door me-2 d-lg-none"></i>
+              Inicio
+            </router-link>
+          </li>
+
+          <li class="nav-item my-1 my-lg-0 mx-lg-2">
+            <router-link
+              to="/products"
+              class="nav-link text-light fw-semibold px-3 py-2 rounded-pill text-center"
+              active-class="active"
+            >
+              <i class="bi bi-box-seam me-2 d-lg-none"></i>
+              Productos
+            </router-link>
+          </li>
+
+          <li class="nav-item my-1 my-lg-0 mx-lg-2">
+            <router-link
+              to="/services"
+              class="nav-link text-light fw-semibold px-3 py-2 rounded-pill text-center"
+              active-class="active"
+            >
+              <i class="bi bi-tools me-2 d-lg-none"></i>
+              Servicios
+            </router-link>
+          </li>
+
+          <li class="nav-item my-1 my-lg-0 mx-lg-2">
+            <router-link
+              to="/events"
+              class="nav-link text-light fw-semibold px-3 py-2 rounded-pill text-center"
+              active-class="active"
+            >
+              <i class="bi bi-calendar-event me-2 d-lg-none"></i>
+              Eventos
+            </router-link>
+          </li>
+
+          <li class="nav-item my-1 my-lg-0 mx-lg-2" v-if="userStore.user?.role === 'A'">
+            <router-link
+              to="/admin"
+              class="nav-link text-light fw-semibold px-3 py-2 rounded-pill text-center"
+              active-class="active"
+            >
+              <i class="bi bi-shield-lock me-2 d-lg-none"></i>
+              Admin
+            </router-link>
+          </li>
+        </ul>
       </div>
 
-      <!-- Carrito con productos -->
-      <div v-else>
-        <!-- Lista de productos -->
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
-          <div class="col" v-for="producto in cartProducts" :key="producto.id">
-            <article class="card h-100 bg-dark bg-opacity-75 border border-secondary border-opacity-25 shadow rounded-4">
-              <div class="position-relative">
-                <img
-                  :src="producto.image"
-                  :alt="producto.name"
-                  class="card-img-top rounded-top-4"
-                  style="height: 220px; object-fit: cover;"
-                  loading="lazy"
-                />
-                <span class="position-absolute top-0 end-0 m-2 badge bg-warning text-dark fw-bold">
-                  €{{ producto.price }}
-                </span>
-              </div>
-              
-              <div class="card-body d-flex flex-column">
-                <h2 class="card-title h5 text-warning fw-bold mb-3">{{ producto.name }}</h2>
-                
-                <div class="d-flex align-items-center bg-dark bg-opacity-50 p-2 rounded-3 mb-3">
-                  <button 
-                    class="btn btn-outline-warning btn-sm"
-                    @click="actualizarCantidad(producto.id, producto.cantidad - 1)"
-                    :disabled="producto.cantidad <= 1"
-                    aria-label="Disminuir cantidad"
-                  >
-                    <i class="bi bi-dash" aria-hidden="true"></i>
-                  </button>
-                  
-                  <input
-                    type="number"
-                    class="form-control form-control-sm mx-2 text-center bg-transparent text-white border-0"
-                    style="max-width: 60px; -moz-appearance: textfield;"
-                    v-model.number="producto.cantidad"
-                    min="1"
-                    :max="producto.stock"
-                    :aria-label="`Cantidad: ${producto.cantidad} de ${producto.name}`"
-                    @change="actualizarCantidad(producto.id, producto.cantidad)"
-                  />
-                  
-                  <button 
-                    class="btn btn-outline-warning btn-sm"
-                    @click="actualizarCantidad(producto.id, producto.cantidad + 1)"
-                    :disabled="producto.cantidad >= producto.stock"
-                    aria-label="Aumentar cantidad"
-                  >
-                    <i class="bi bi-plus" aria-hidden="true"></i>
-                  </button>
-                </div>
-                
-                <div class="d-flex justify-content-between align-items-center mt-auto">
-                  <span class="text-light">
-                    Subtotal: <strong class="text-warning">€{{ (producto.price * producto.cantidad).toFixed(2) }}</strong>
-                  </span>
-                  
-                  <button
-                    class="btn btn-outline-danger btn-sm"
-                    @click="eliminarDelCarrito(producto.id)"
-                    aria-label="Eliminar producto del carrito"
-                  >
-                    <i class="bi bi-trash me-1" aria-hidden="true"></i>
-                    <span class="d-none d-sm-inline">Eliminar</span>
-                  </button>
-                </div>
-              </div>
-            </article>
-          </div>
+      <div class="d-flex align-items-center ms-auto">
+        <div v-if="userStore.isAuthenticated" class="d-flex align-items-center me-3">
+          <span
+            class="d-inline-flex justify-content-center align-items-center rounded-circle bg-warning text-dark me-2"
+            style="width: 28px; height: 28px"
+          >
+            {{ userStore.user?.username?.charAt(0).toUpperCase() || "U" }}
+          </span>
+          <router-link to="/profile" class="no-decorator">
+            <span class="d-none d-sm-inline text-light">{{ userStore.user?.username }}</span>
+          </router-link>
+          <button
+            @click="userStore.logout"
+            class="btn btn-link text-warning ms-2 p-0"
+            aria-label="Cerrar sesión"
+          >
+            <i class="bi bi-box-arrow-right fs-5"></i>
+          </button>
         </div>
 
-        <!-- Resumen y acciones del carrito -->
-        <div class="bg-dark bg-opacity-75 rounded-4 p-4 shadow-lg mt-4 border-start border-warning border-4 border-opacity-50">
-          <div class="row align-items-center">
-            <div class="col-md-6 mb-3 mb-md-0">
-              <h3 class="h4 text-warning mb-2">Resumen del carrito</h3>
-              <div class="d-flex justify-content-between">
-                <span class="text-white-50">Productos:</span>
-                <span class="text-white">{{ cartProducts.length }}</span>
-              </div>
-              <div class="d-flex justify-content-between fw-bold fs-5 mt-2">
-                <span class="text-white">Total:</span>
-                <span class="text-warning">€{{ total }}</span>
-              </div>
-            </div>
-            
-            <div class="col-md-6">
-              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <button 
-                  class="btn btn-outline-danger" 
-                  @click="vaciarCarrito"
-                  aria-label="Vaciar todo el carrito"
-                >
-                  <i class="bi bi-trash me-2" aria-hidden="true"></i>Vaciar
-                </button>
-                
-                <button 
-                  class="btn btn-success" 
-                  @click="procesarPago"
-                  aria-label="Proceder con el pago"
-                >
-                  <i class="bi bi-credit-card me-2" aria-hidden="true"></i>Pagar Ahora
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <router-link
+          v-else
+          to="/login"
+          class="btn btn-outline-warning btn-sm rounded-pill px-3 me-3"
+        >
+          <i class="bi bi-person me-1"></i>
+          <span class="d-none d-sm-inline">Iniciar sesión</span>
+        </router-link>
+
+        <router-link
+          to="/cart"
+          class="btn btn-warning position-relative rounded-circle p-2 d-flex justify-content-center align-items-center"
+          aria-label="Carrito de compras"
+          style="width: 38px; height: 38px"
+        >
+          <i class="bi bi-cart-fill"></i>
+          <span
+            v-if="cartItemCount > 0"
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+          >
+            {{ cartItemCount > 9 ? "9+" : cartItemCount }}
+          </span>
+        </router-link>
       </div>
     </div>
-  </main>
+  </nav>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
-import axios from "axios";
-import { useCartStore } from "../stores/cart";
+import { onMounted, ref } from "vue";
+import { useUserStore } from "../stores/userStore";
 
-const cartStore = useCartStore();
+const userStore = useUserStore();
+const cartItemCount = ref(0);
 
-const cartProducts = computed(() => cartStore.products);
-const total = computed(() => cartStore.total);
+onMounted(async () => {
+  userStore.initialize();
 
-const eliminarDelCarrito = (id: number) => {
-  cartStore.removeProduct(id);
-};
-
-const vaciarCarrito = () => {
-  cartStore.emptyCart();
-};
-
-const actualizarCantidad = (id: number, nuevaCantidad: number) => {
-  const product = cartProducts.value.find((p) => p.id === id);
-
-  if (!product) return;
-
-  if (nuevaCantidad > product.stock) {
-    alert(`Solo puedes agregar hasta ${product.stock} unidades de este producto.`);
-    nuevaCantidad = product.stock;
+  if (userStore.isAuthenticated && !userStore.user) {
+    await userStore.fetchUser();
   }
 
-  if (nuevaCantidad < 1) {
-    alert("La cantidad mínima es 1.");
-    return;
-  }
-
-  cartStore.updateQuantity(id, nuevaCantidad);
-};
-
-const token = localStorage.getItem("token");
-
-const procesarPago = async () => {
-  if (cartProducts.value.length === 0) {
-    alert("Tu carrito está vacío.");
-    return;
-  }
-
-  try {
-    const productsToSend = cartProducts.value.map((p) => ({
-      id: p.id,
-      quantity: p.cantidad,
-    }));
-
-    const response = await axios.post(
-      "http://localhost:8000/api/orders/add/",
-      { products: productsToSend },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    if (response.status === 201 || response.status === 200) {
-      alert("Pedido realizado con éxito");
-      vaciarCarrito();
-    } else {
-      alert("Error al procesar el pedido");
-    }
-  } catch (error) {
-    console.error(error);
-    alert("Error en la petición, revisa la consola.");
-  }
-};
-
-onMounted(() => {
-  cartStore.loadCart();
+  const storedCart = localStorage.getItem("cartItems");
+  cartItemCount.value = storedCart ? JSON.parse(storedCart).length : 0;
 });
 </script>
 
-<style>
-/* Estilos mínimos para características que no se pueden lograr con Bootstrap */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+
+<style scoped>
+.navbar {
+  height: 70px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
+  z-index: 1030;
 }
 
-/* Fondo degradado para mantener la paleta de colores existente */
-main {
-  background: radial-gradient(circle at top, #1a1a1a, #121212);
-}
-
-/* Regla para dispositivos móviles - el borde cambia de posición */
-@media (max-width: 767.98px) {
-  .border-start.border-warning {
-    border-left: none !important;
-    border-top: 4px solid rgba(255, 215, 0, 0.5) !important;
+/* Animación para el menú móvil */
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
+    position: absolute;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid #333;
   }
+}
+
+/* Estilo para enlaces de navegación */
+.nav-link {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.nav-link.active {
+  color: #ffb100 !important;
+  background-color: rgba(255, 177, 0, 0.15);
+}
+
+.nav-link:hover:not(.active) {
+  color: #ffb100 !important;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Botones */
+.btn-outline-warning {
+  --bs-btn-color: #ffb100;
+  --bs-btn-border-color: #ffb100;
+  --bs-btn-hover-bg: #ffb100;
+  --bs-btn-hover-border-color: #ffb100;
+  --bs-btn-hover-color: #000;
+  --bs-btn-active-bg: #cc8e00;
+}
+
+.btn-warning {
+  background-color: #ffb100;
+  border-color: #ffb100;
+  color: #000;
+}
+
+.btn-warning:hover {
+  background-color: #cc8e00;
+  border-color: #cc8e00;
+}
+
+/* Badge del carrito */
+.badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.25em 0.45em;
 }
 </style>

@@ -42,7 +42,7 @@
                   <div>
                     <h5 class="card-title text-warning">Orden #{{ orden.id }}</h5>
                     <p class="card-text mb-2">
-                      <strong>Total:</strong> {{ orden.total }}€<br />
+                      <strong>Total:</strong> {{ orden.price }}€<br />
                       <strong>Estado:</strong> {{ orden.status }}
                     </p>
                     <h6 class="text-light mt-3 mb-2">Productos:</h6>
@@ -52,10 +52,24 @@
                         :key="producto.id"
                         class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between"
                       >
-                        <span>{{ producto.name }} (x{{ producto.quantity }})</span>
+                        <span>{{ producto.name }} (x{{ producto.count }})</span>
                         <span>{{ producto.price }}€</span>
                       </li>
                     </ul>
+                  </div>
+                  <div v-if="orden.status === 'Pending'" class="mt-3">
+                    <button 
+                      class="btn btn-outline-success me-2"
+                      @click="pagarOrden(orden.id)"
+                    >
+                      Pagar
+                    </button>
+                    <button 
+                      class="btn btn-outline-danger"
+                      @click="cancelarOrden(orden.id, orden.products)"
+                    >
+                      Cancelar
+                    </button>
                   </div>
                 </div>
               </div>
@@ -74,10 +88,12 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
 
 const reservas = ref([]);
 const ordenes = ref([]);
 const token = localStorage.getItem('token');
+const router = useRouter();
 
 async function fetchReservas() {
   try {
@@ -101,8 +117,38 @@ async function fetchOrdenes() {
   }
 }
 
+const pagarOrden = (id) => {
+  router.push(`/payment/${id}`); // Redirigir a /payment/{order_id}
+};
+
+const cancelarOrden = async (id, productos) => {
+  try {
+    // Crear un array de productos a enviar con id y cantidad
+    const productosAEnviar = productos.map(producto => ({
+      id: producto.id,
+      quantity: producto.cantidad
+    }));
+
+    await axios.post(`http://localhost:8000/api/orders/${id}/cancel-order/`, 
+      { products: productosAEnviar }, 
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    alert("Orden cancelada exitosamente.");
+    fetchOrdenes(); // Actualizar la lista de órdenes
+  } catch (error) {
+    console.error('Error al cancelar la orden:', error);
+    alert("Error al cancelar la orden.");
+  }
+};
+
 onMounted(() => {
   fetchReservas();
   fetchOrdenes();
 });
 </script>
+
+<style scoped>
+/* Estilos adicionales si es necesario */
+</style>
