@@ -39,9 +39,11 @@
       </div>
       <div class="d-flex align-items-center ms-auto">
         <div v-if="userStore.isAuthenticated" class="d-flex align-items-center me-3">
+          <router-link to="/profile">
           <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-warning text-dark me-2" style="width: 28px; height: 28px">
             {{ userStore.user?.username?.charAt(0).toUpperCase() || "U" }}
           </span>
+        </router-link>
           <router-link to="/profile">
             <span class="d-none d-sm-inline text-light no-decorator">{{ userStore.user?.username }}</span>
           </router-link>
