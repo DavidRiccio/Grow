@@ -1,7 +1,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import { useCartStore } from '@/stores/cart';
+import { useCartStore } from '../stores/cart';
 
 export default defineComponent({
   name: 'ProductCard',

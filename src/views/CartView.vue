@@ -133,7 +133,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
 import axios from "axios";
-import { useCartStore } from "@/stores/cart";
+import { useCartStore } from "../stores/cart";
 
 const cartStore = useCartStore();
 

@@ -34,7 +34,7 @@
                   </div>
                 </div>
                 <blockquote class="card-text text-white-50 flex-grow-1 mb-0">
-                  <p class="mb-0">{{ review.text }}</p>
+                  <p class="mb-0 text-light" >{{ review.text }}</p>
                 </blockquote>
               </div>
             </div>
@@ -63,7 +63,7 @@
           </div>
           <div class="col-lg-6 order-lg-1 text-center text-lg-start">
             <h2 id="location-title" class="section-title position-relative mb-4">Visítanos en el corazón de Santa Cruz</h2>
-            <p class="fs-5 text-light-emphasis mb-4">
+            <p class="fs-5 text-light mb-4">
               GrowStudio está ubicado en una zona de fácil acceso con aparcamiento cercano. Ven a relajarte, renovar tu estilo y disfrutar de un ambiente único pensado para ti.
             </p>
             <p class="highlight-text text-warning fw-semibold d-inline-block py-2 px-4">¡Te esperamos con café y buena vibra!</p>

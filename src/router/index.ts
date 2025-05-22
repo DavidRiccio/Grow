@@ -10,8 +10,8 @@ import Login from '../views/LoginView.vue';
 import Signup from '../views/SignupView.vue';
 import Reserva from '../views/BookingForm.vue'; 
 import Admin from '../views/AdminDashboard.vue';
-import Profile from '@/views/ProfileView.vue';
-import { useUserStore } from '@/stores/userStore'; 
+import Profile from '../views/ProfileView.vue';
+import { useUserStore } from '../stores/userStore'; 
 
 const routes = [
   { path: '/', component: Home },
@@ -23,7 +23,7 @@ const routes = [
   {
     path: '/eventos/:id',
     name: 'EventDetail',
-    component: () => import('@/views/EventDetail.vue')
+    component: () => import('../views/EventDetail.vue')
   },
   { path: '/cart', component: Cart },
   { path: '/admin', component: Admin, meta: { requiresAuth: true, requiresRole: 'A' } }, // Agregar meta para rol

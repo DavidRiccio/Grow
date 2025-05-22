@@ -116,7 +116,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useCartStore } from "@/stores/cart";
+import { useCartStore } from "../stores/cart";
 
 
 const productos = ref([]);

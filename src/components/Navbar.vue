@@ -122,7 +122,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { useUserStore } from "@/stores/userStore";
+import { useUserStore } from "../stores/userStore";
 
 const userStore = useUserStore();
 // Variable reactiva para la cantidad de elementos en el carrito

@@ -104,9 +104,9 @@
 </template>
 
 <script>
-import StepBarber from "@/components/ChooseBarber.vue";
-import StepService from "@/components/ChooseService.vue";
-import StepDate from "@/components/ChooseDate.vue";
+import StepBarber from "../components/ChooseBarber.vue";
+import StepService from "../components/ChooseService.vue";
+import StepDate from "../components/ChooseDate.vue";
 
 
 export default {

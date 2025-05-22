@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
-import { useUserStore } from "@/stores/userStore";
+import { useUserStore } from "../stores/userStore";
 import axios from "axios";
 
 const userStore = useUserStore();
