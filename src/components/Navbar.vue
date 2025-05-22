@@ -42,7 +42,7 @@
           <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-warning text-dark me-2" style="width: 28px; height: 28px">
             {{ userStore.user?.username?.charAt(0).toUpperCase() || "U" }}
           </span>
-          <router-link to="/profile" class="no-decorator">
+          <router-link to="/profile">
             <span class="d-none d-sm-inline text-light no-decorator">{{ userStore.user?.username }}</span>
           </router-link>
           <button @click="userStore.logout" class="btn btn-link text-warning ms-2 p-0" aria-label="Cerrar sesión">
