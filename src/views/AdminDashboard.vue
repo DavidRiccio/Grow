@@ -582,6 +582,16 @@ function checkAuthorization() {
   }
 }
 
+// Función helper para convertir archivo a base64
+function convertFileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 // Función para obtener URL completa de imagen
 function getImageUrl(imagePath) {
   if (!imagePath) return '';
@@ -784,23 +794,31 @@ async function loadServices() {
 async function submitService() {
   isSubmitting.value = true;
   try {
-    const formData = new FormData();
-    formData.append('name', serviceForm.name);
-    formData.append('description', serviceForm.description);
-    formData.append('price', parseFloat(serviceForm.price));
-    formData.append('duration', serviceForm.duration);
-    
+    // Convertir imagen a base64 si existe
+    let imageBase64 = null;
     if (selectedServiceImage.value) {
-      formData.append('image', selectedServiceImage.value);
+      imageBase64 = await convertFileToBase64(selectedServiceImage.value);
+    } else if (editingService.value && editingService.value.image && serviceImagePreview.value) {
+      // Si estamos editando y mantenemos la imagen existente
+      imageBase64 = serviceImagePreview.value.startsWith('data:') ? serviceImagePreview.value : null;
     }
+
+    const requestData = {
+      name: serviceForm.name,
+      description: serviceForm.description,
+      price: parseFloat(serviceForm.price),
+      duration: serviceForm.duration,
+      image: imageBase64 // Enviar como base64 o null
+    };
 
     const endpoint = editingService.value 
       ? `http://localhost:8000/api/services/${editingService.value.id}/edit/`
       : "http://localhost:8000/api/services/add/";
 
-    await axios.post(endpoint, formData, {
+    await axios.post(endpoint, requestData, {
       headers: { 
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     });
 
@@ -808,7 +826,7 @@ async function submitService() {
     resetServiceForm();
   } catch (error) {
     console.error("Error submitting service:", error);
-    alert('Error al guardar el servicio: ' + (error.response?.data?.detail || error.message));
+    alert('Error al guardar el servicio: ' + (error.response?.data?.error || error.response?.data?.detail || error.message));
   }
   isSubmitting.value = false;
 }
@@ -828,6 +846,9 @@ function editService(service) {
   if (service.image) {
     serviceImagePreview.value = getImageUrl(service.image);
   }
+  
+  // Limpiar archivo seleccionado al editar
+  selectedServiceImage.value = null;
 }
 
 function cancelEditService() {
@@ -873,24 +894,32 @@ async function loadEvents() {
 async function submitEvent() {
   isSubmitting.value = true;
   try {
-    const formData = new FormData();
-    formData.append('name', eventForm.name);
-    formData.append('description', eventForm.description);
-    formData.append('date', eventForm.date);
-    formData.append('time', eventForm.time);
-    formData.append('location', eventForm.location);
-    
+    // Convertir imagen a base64 si existe
+    let imageBase64 = null;
     if (selectedEventImage.value) {
-      formData.append('image', selectedEventImage.value);
+      imageBase64 = await convertFileToBase64(selectedEventImage.value);
+    } else if (editingEvent.value && editingEvent.value.image && eventImagePreview.value) {
+      // Si estamos editando y mantenemos la imagen existente
+      imageBase64 = eventImagePreview.value.startsWith('data:') ? eventImagePreview.value : null;
     }
+
+    const requestData = {
+      name: eventForm.name,
+      description: eventForm.description,
+      date: eventForm.date,
+      time: eventForm.time,
+      location: eventForm.location,
+      image: imageBase64 // Enviar como base64 o null
+    };
 
     const endpoint = editingEvent.value 
       ? `http://localhost:8000/api/events/${editingEvent.value.id}/edit/`
       : "http://localhost:8000/api/events/add/";
 
-    await axios.post(endpoint, formData, {
+    await axios.post(endpoint, requestData, {
       headers: { 
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     });
 
@@ -898,7 +927,7 @@ async function submitEvent() {
     resetEventForm();
   } catch (error) {
     console.error("Error submitting event:", error);
-    alert('Error al guardar el evento: ' + (error.response?.data?.detail || error.message));
+    alert('Error al guardar el evento: ' + (error.response?.data?.error || error.response?.data?.detail || error.message));
   }
   isSubmitting.value = false;
 }
@@ -915,6 +944,9 @@ function editEvent(event) {
   if (event.image) {
     eventImagePreview.value = getImageUrl(event.image);
   }
+  
+  // Limpiar archivo seleccionado al editar
+  selectedEventImage.value = null;
 }
 
 function cancelEditEvent() {
@@ -959,23 +991,31 @@ async function loadProducts() {
 async function submitProduct() {
   isSubmitting.value = true;
   try {
-    const formData = new FormData();
-    formData.append('name', productForm.name);
-    formData.append('description', productForm.description);
-    formData.append('price', parseFloat(productForm.price));
-    formData.append('stock', parseInt(productForm.stock));
-    
+    // Convertir imagen a base64 si existe
+    let imageBase64 = null;
     if (selectedProductImage.value) {
-      formData.append('image', selectedProductImage.value);
+      imageBase64 = await convertFileToBase64(selectedProductImage.value);
+    } else if (editingProduct.value && editingProduct.value.image && productImagePreview.value) {
+      // Si estamos editando y mantenemos la imagen existente
+      imageBase64 = productImagePreview.value.startsWith('data:') ? productImagePreview.value : null;
     }
+
+    const requestData = {
+      name: productForm.name,
+      description: productForm.description,
+      price: parseFloat(productForm.price),
+      stock: parseInt(productForm.stock),
+      image: imageBase64 // Enviar como base64 o null
+    };
 
     const endpoint = editingProduct.value 
       ? `http://localhost:8000/api/products/${editingProduct.value.id}/edit/`
       : "http://localhost:8000/api/products/add/";
 
-    await axios.post(endpoint, formData, {
+    await axios.post(endpoint, requestData, {
       headers: { 
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     });
 
@@ -983,7 +1023,7 @@ async function submitProduct() {
     resetProductForm();
   } catch (error) {
     console.error("Error submitting product:", error);
-    alert('Error al guardar el producto: ' + (error.response?.data?.detail || error.message));
+    alert('Error al guardar el producto: ' + (error.response?.data?.error || error.response?.data?.detail || error.message));
   }
   isSubmitting.value = false;
 }
@@ -999,6 +1039,9 @@ function editProduct(product) {
   if (product.image) {
     productImagePreview.value = getImageUrl(product.image);
   }
+  
+  // Limpiar archivo seleccionado al editar
+  selectedProductImage.value = null;
 }
 
 function cancelEditProduct() {
