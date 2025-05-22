@@ -3,11 +3,7 @@
     <div class="container">
       <div class="row align-items-center">
         <!-- Columna izquierda -->
-        <div class="col-md-4 text-center text-md-start mb-2 mb-md-0">
-          <div class="logo-footer d-flex justify-content-center justify-content-md-start">
-            <img src="../assets/img/Logo principal con tagline.png" alt="Logo" class="logo-dark-footer">
-          </div>
-        </div>
+      
 
         <!-- Columna central -->
         <div class="col-md-4 text-center mb-2 mb-md-0">
