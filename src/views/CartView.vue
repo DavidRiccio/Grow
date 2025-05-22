@@ -1,18 +1,30 @@
 <template>
   <main class="bg-dark text-white py-5 min-vh-100" aria-labelledby="cart-title">
     <div class="container">
-      <h1 id="cart-title" class="text-warning fw-bold mb-5 text-center display-5" style="font-family: Kanit, sans-serif;">
+      <h1
+        id="cart-title"
+        class="text-warning fw-bold mb-5 text-center display-5"
+        style="font-family: Kanit, sans-serif;"
+      >
         Carrito de Compras
       </h1>
 
       <!-- Carrito vacío -->
-      <div v-if="cartProducts.length === 0" class="text-center my-5 py-4 mx-auto" style="max-width: 500px;">
+      <div
+        v-if="cartProducts.length === 0"
+        class="text-center my-5 py-4 mx-auto"
+        style="max-width: 500px;"
+      >
         <div class="mb-3">
           <i class="bi bi-cart text-warning display-1" aria-hidden="true"></i>
         </div>
         <p class="fs-4 text-light mb-4">Tu carrito está vacío. ¡Añade productos!</p>
-        <a href="/products" class="btn btn-warning px-4 py-2 fw-semibold" 
-           role="button" aria-label="Ir a la sección de productos">
+        <a
+          href="/products"
+          class="btn btn-warning px-4 py-2 fw-semibold"
+          role="button"
+          aria-label="Ir a la sección de productos"
+        >
           <i class="bi bi-bag-plus me-2" aria-hidden="true"></i>Ir a Productos
         </a>
       </div>
@@ -35,12 +47,10 @@
                   €{{ producto.price }}
                 </span>
               </div>
-              
               <div class="card-body d-flex flex-column">
                 <h2 class="card-title h5 text-warning fw-bold mb-3">{{ producto.name }}</h2>
-                
                 <div class="d-flex align-items-center bg-dark bg-opacity-50 p-2 rounded-3 mb-3">
-                  <button 
+                  <button
                     class="btn btn-outline-warning btn-sm"
                     @click="actualizarCantidad(producto.id, producto.cantidad - 1)"
                     :disabled="producto.cantidad <= 1"
@@ -48,7 +58,6 @@
                   >
                     <i class="bi bi-dash" aria-hidden="true"></i>
                   </button>
-                  
                   <input
                     type="number"
                     class="form-control form-control-sm mx-2 text-center bg-transparent text-white border-0"
@@ -59,8 +68,7 @@
                     :aria-label="`Cantidad: ${producto.cantidad} de ${producto.name}`"
                     @change="actualizarCantidad(producto.id, producto.cantidad)"
                   />
-                  
-                  <button 
+                  <button
                     class="btn btn-outline-warning btn-sm"
                     @click="actualizarCantidad(producto.id, producto.cantidad + 1)"
                     :disabled="producto.cantidad >= producto.stock"
@@ -69,12 +77,11 @@
                     <i class="bi bi-plus" aria-hidden="true"></i>
                   </button>
                 </div>
-                
                 <div class="d-flex justify-content-between align-items-center mt-auto">
                   <span class="text-light">
-                    Subtotal: <strong class="text-warning">€{{ (producto.price * producto.cantidad).toFixed(2) }}</strong>
+                    Subtotal:
+                    <strong class="text-warning">€{{ (producto.price * producto.cantidad).toFixed(2) }}</strong>
                   </span>
-                  
                   <button
                     class="btn btn-outline-danger btn-sm"
                     @click="eliminarDelCarrito(producto.id)"
@@ -89,7 +96,7 @@
           </div>
         </div>
 
-        <!-- Resumen y acciones del carrito -->
+        <!-- Resumen -->
         <div class="bg-dark bg-opacity-75 rounded-4 p-4 shadow-lg mt-4 border-start border-warning border-4 border-opacity-50">
           <div class="row align-items-center">
             <div class="col-md-6 mb-3 mb-md-0">
@@ -103,23 +110,17 @@
                 <span class="text-warning">€{{ total }}</span>
               </div>
             </div>
-            
             <div class="col-md-6">
               <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <button 
-                  class="btn btn-outline-danger" 
-                  @click="vaciarCarrito"
-                  aria-label="Vaciar todo el carrito"
-                >
+                <button class="btn btn-outline-danger" @click="vaciarCarrito" aria-label="Vaciar todo el carrito">
                   <i class="bi bi-trash me-2" aria-hidden="true"></i>Vaciar
                 </button>
-                
-                <button 
-                  class="btn btn-success" 
-                  @click="procesarPago"
-                  aria-label="Proceder con el pago"
-                >
-                  <i class="bi bi-credit-card me-2" aria-hidden="true"></i>Pagar Ahora
+                <button class="btn btn-outline-warning" @click="pagarTarde" :disabled="isProcessing" aria-label="Pagar más tarde">
+                  <i class="bi bi-arrow-right"></i> Pagar más Tarde
+                </button>
+                <button class="btn btn-outline-success" @click="procesarPago" :disabled="isProcessing" aria-label="Proceder con el pago">
+                  <i class="bi bi-credit-card me-2" aria-hidden="true"></i>
+                  {{ isProcessing ? "Procesando..." : "Pagar Ahora" }}
                 </button>
               </div>
             </div>
@@ -131,11 +132,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import axios from "axios";
 import { useCartStore } from "../stores/cart";
 
 const cartStore = useCartStore();
+const router = useRouter();
+const isProcessing = ref(false);
 
 const cartProducts = computed(() => cartStore.products);
 const total = computed(() => cartStore.total);
@@ -150,14 +154,12 @@ const vaciarCarrito = () => {
 
 const actualizarCantidad = (id: number, nuevaCantidad: number) => {
   const product = cartProducts.value.find((p) => p.id === id);
-
   if (!product) return;
 
   if (nuevaCantidad > product.stock) {
     alert(`Solo puedes agregar hasta ${product.stock} unidades de este producto.`);
     nuevaCantidad = product.stock;
   }
-
   if (nuevaCantidad < 1) {
     alert("La cantidad mínima es 1.");
     return;
@@ -168,37 +170,91 @@ const actualizarCantidad = (id: number, nuevaCantidad: number) => {
 
 const token = localStorage.getItem("token");
 
+const pagarTarde = async () => {
+  if (cartProducts.value.length === 0) {
+    alert("Tu carrito está vacío.");
+    return;
+  }
+  if (!token) {
+    alert("Debes iniciar sesión para proceder con el pago.");
+    router.push("/login");
+    return;
+  }
+
+  try {
+    isProcessing.value = true;
+    const productsToSend = cartProducts.value.map((p) => ({ id: p.id, quantity: p.cantidad }));
+    const response = await axios.post(
+      "http://localhost:8000/api/orders/add/",
+      { products: productsToSend },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    if (response.status === 201 || response.status === 200) {
+      vaciarCarrito();
+      router.push("/profile");
+    } else {
+      alert("Error al procesar el pedido");
+    }
+  } catch (error: any) {
+    console.error("Error al crear la orden:", error);
+    if (error.response?.status === 401) {
+      alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
+      router.push("/login");
+    } else if (error.response?.data?.error) {
+      alert(`Error: ${error.response.data.error}`);
+    } else {
+      alert("Error en la petición, revisa la consola.");
+    }
+  } finally {
+    isProcessing.value = false;
+  }
+};
+
 const procesarPago = async () => {
   if (cartProducts.value.length === 0) {
     alert("Tu carrito está vacío.");
     return;
   }
+  if (!token) {
+    alert("Debes iniciar sesión para proceder con el pago.");
+    router.push("/login");
+    return;
+  }
 
   try {
-    const productsToSend = cartProducts.value.map((p) => ({
-      id: p.id,
-      quantity: p.cantidad,
-    }));
-
+    isProcessing.value = true;
+    const productsToSend = cartProducts.value.map((p) => ({ id: p.id, quantity: p.cantidad }));
     const response = await axios.post(
       "http://localhost:8000/api/orders/add/",
       { products: productsToSend },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      { headers: { Authorization: `Bearer ${token}` } }
     );
 
     if (response.status === 201 || response.status === 200) {
-      alert("Pedido realizado con éxito");
+      const orderPk = response.data.order_id || response.data.id;
+      if (!orderPk) {
+        console.error("No se recibió el ID de la orden:", response.data);
+        alert("Error: No se pudo obtener el ID de la orden.");
+        return;
+      }
       vaciarCarrito();
+      router.push({ name: 'Payment', params: { orderPk } });
     } else {
       alert("Error al procesar el pedido");
     }
-  } catch (error) {
-    console.error(error);
-    alert("Error en la petición, revisa la consola.");
+  } catch (error: any) {
+    console.error("Error al crear la orden:", error);
+    if (error.response?.status === 401) {
+      alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
+      router.push("/login");
+    } else if (error.response?.data?.error) {
+      alert(`Error: ${error.response.data.error}`);
+    } else {
+      alert("Error en la petición, revisa la consola.");
+    }
+  } finally {
+    isProcessing.value = false;
   }
 };
 
@@ -208,19 +264,16 @@ onMounted(() => {
 </script>
 
 <style>
-/* Estilos mínimos para características que no se pueden lograr con Bootstrap */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-/* Fondo degradado para mantener la paleta de colores existente */
 main {
   background: radial-gradient(circle at top, #1a1a1a, #121212);
 }
 
-/* Regla para dispositivos móviles - el borde cambia de posición */
 @media (max-width: 767.98px) {
   .border-start.border-warning {
     border-left: none !important;
