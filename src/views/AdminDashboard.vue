@@ -1141,10 +1141,6 @@ async function deleteProduct(id) {
   background-color: transparent;
 }
 
-.table-striped > tbody > tr:nth-of-type(odd) > td {
-  background-color: rgba(255, 215, 0, 0.1);
-}
-
 .table th {
   border-top: none;
   border-bottom: 2px solid #ffd700;
