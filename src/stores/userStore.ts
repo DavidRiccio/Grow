@@ -32,7 +32,7 @@ export const useUserStore = defineStore("user", {
       this.isAuthenticated = false;
       localStorage.removeItem("token");
       localStorage.removeItem("username");
-      localStorage.removeItem("role"); 
+      localStorage.removeItem("role");
     },
   },
 });

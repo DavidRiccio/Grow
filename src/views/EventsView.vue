@@ -96,7 +96,7 @@
                   class="btn btn-warning w-100"
                   :aria-label="`Ver detalles del evento ${card.name}`"
                 >
-                  Ver Curso
+                  Ver Evento
                 </router-link>
               </div>
             </article>
@@ -169,7 +169,7 @@ onMounted(fetchCourses);
 
 <style scoped>
 #courses {
-  background: radial-gradient(circle at top, #1a1a1a, #121212);
+  background: radial-gradient(circle at top, #070707, #181818);
   color: white;
   min-height: 100vh;
 }

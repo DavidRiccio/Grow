@@ -338,7 +338,7 @@ onMounted(() => {
 
 /* Base Styles */
 .orders-page {
-  background: radial-gradient(circle at top, #1a1a1a, #121212);
+  background: radial-gradient(circle at top, #070707, #181818);
   min-height: 100vh;
   color: white;
   font-family: 'Poppins', sans-serif;

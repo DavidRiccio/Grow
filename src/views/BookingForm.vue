@@ -163,7 +163,7 @@ export default {
 @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@700&family=Poppins:wght@400;600&display=swap');
 
 .booking-form-page {
-  background: radial-gradient(circle at top, #1a1a1a, #121212);
+  background: radial-gradient(circle at top, #070707, #181818);
   overflow-x: hidden;
 }
 

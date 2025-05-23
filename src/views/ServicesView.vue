@@ -53,7 +53,7 @@
             </div>
             
             <div class="card-body p-4 d-flex flex-column">
-              <h2 class="card-title h4 mb-3 fw-bold">{{ service.title }}</h2>
+              <h2 class="card-title h4 mb-3 fw-bold">{{ service.name }}</h2>
               <p class="card-text text-white-50 mb-4">
                 {{ service.description }}
               </p>
@@ -132,7 +132,7 @@ onMounted(fetchServices)
 
 <style scoped>
 #services {
-  background: radial-gradient(circle at top, #1a1a1a, #121212);
+  background: radial-gradient(circle at top, #070707, #181818);
   min-height: 100vh;
 }
 

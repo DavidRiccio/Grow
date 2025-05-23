@@ -94,7 +94,7 @@
 
 <style scoped>
 .container-fluid {
-  background: radial-gradient(circle at top, #1a1a1a, #121212);
+  background: radial-gradient(circle at top, #070707, #181818);
   min-height: calc(100vh - 100px);
 }
 .card {

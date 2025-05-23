@@ -271,7 +271,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 main {
-  background: radial-gradient(circle at top, #1a1a1a, #121212);
+  background: radial-gradient(circle at top, #070707, #181818);
 }
 
 @media (max-width: 767.98px) {

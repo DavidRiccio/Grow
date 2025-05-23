@@ -47,7 +47,7 @@
           <router-link to="/profile">
             <span class="d-none d-sm-inline text-light no-decorator">{{ userStore.user?.username }}</span>
           </router-link>
-          <button @click="userStore.logout" class="btn btn-link text-warning ms-2 p-0" aria-label="Cerrar sesión">
+          <button @click.prevent="handleLogout" class="btn btn-link text-warning ms-2 p-0" aria-label="Cerrar sesión" type="button">
             <i class="bi bi-box-arrow-right fs-5"></i>
           </button>
         </div>
@@ -57,7 +57,7 @@
         <router-link to="/cart" class="btn btn-warning position-relative rounded-circle p-2 d-flex justify-content-center align-items-center" aria-label="Carrito de compras" style="width: 38px; height: 38px">
           <i class="bi bi-cart-fill"></i>
           <span v-if="cartItemCount > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-            {{ cartItemCount > 9 ? "9+" : cartItemCount }}
+
           </span>
         </router-link>
       </div>
@@ -71,6 +71,13 @@ import { useUserStore } from "../stores/userStore";
 
 const userStore = useUserStore();
 const cartItemCount = ref(0);
+
+const handleLogout = () => {
+  console.log('Logout iniciado');
+  userStore.logout();
+  console.log('Store limpiado');
+  window.location.href = '/';
+};
 
 onMounted(async () => {
   userStore.initialize();

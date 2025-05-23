@@ -114,7 +114,7 @@
                     </div>
                   </div>
                   <div class="mb-3">
-                    <label for="service-image" class="form-label">Imagen del Servicio</label>
+                    <label for="service-image" class="form-label">Imagen del Servicio <span class="text-danger">*</span></label>
                     <input
                       type="file"
                       class="form-control"
@@ -122,7 +122,11 @@
                       ref="serviceImageInput"
                       @change="handleServiceImageUpload"
                       accept="image/*"
+                      :class="{ 'is-invalid': serviceImageError }"
                     />
+                    <div v-if="serviceImageError" class="invalid-feedback">
+                      {{ serviceImageError }}
+                    </div>
                     <div v-if="serviceImagePreview" class="mt-2">
                       <img :src="serviceImagePreview" alt="Preview" class="img-thumbnail" style="max-width: 200px;">
                       <button type="button" class="btn btn-sm btn-outline-danger ms-2" @click="clearServiceImage">
@@ -260,15 +264,19 @@
                     </div>
                   </div>
                   <div class="mb-3">
-                    <label for="event-image" class="form-label">Imagen del Evento</label>
-                    <input
-                      type="file"
-                      class="form-control"
-                      id="event-image"
-                      ref="eventImageInput"
-                      @change="handleEventImageUpload"
-                      accept="image/*"
-                    />
+                      <label for="event-image" class="form-label">Imagen del Evento <span class="text-danger">*</span></label>
+                      <input
+                        type="file"
+                        class="form-control"
+                        id="event-image"
+                        ref="eventImageInput"
+                        @change="handleEventImageUpload"
+                        accept="image/*"
+                        :class="{ 'is-invalid': eventImageError }"
+                      />
+                      <div v-if="eventImageError" class="invalid-feedback">
+                        {{ eventImageError }}
+                      </div>
                     <div v-if="eventImagePreview" class="mt-2">
                       <img :src="eventImagePreview" alt="Preview" class="img-thumbnail" style="max-width: 200px;">
                       <button type="button" class="btn btn-sm btn-outline-danger ms-2" @click="clearEventImage">
@@ -403,16 +411,20 @@
                       />
                     </div>
                   </div>
-                  <div class="mb-3">
-                    <label for="product-image" class="form-label">Imagen del Producto</label>
-                    <input
-                      type="file"
-                      class="form-control"
-                      id="product-image"
-                      ref="productImageInput"
-                      @change="handleProductImageUpload"
-                      accept="image/*"
-                    />
+                    <div class="mb-3">
+                      <label for="product-image" class="form-label">Imagen del Producto <span class="text-danger">*</span></label>
+                      <input
+                        type="file"
+                        class="form-control"
+                        id="product-image"
+                        ref="productImageInput"
+                        @change="handleProductImageUpload"
+                        accept="image/*"
+                        :class="{ 'is-invalid': productImageError }"
+                      />
+                      <div v-if="productImageError" class="invalid-feedback">
+                        {{ productImageError }}
+                      </div>
                     <div v-if="productImagePreview" class="mt-2">
                       <img :src="productImagePreview" alt="Preview" class="img-thumbnail" style="max-width: 200px;">
                       <button type="button" class="btn btn-sm btn-outline-danger ms-2" @click="clearProductImage">
@@ -516,10 +528,13 @@ const productImagePreview = ref('');
 // Variables para los archivos seleccionados
 const selectedServiceImage = ref(null);
 const selectedEventImage = ref(null);
-const selectedProductImage = ref(null);
 
+const selectedProductImage = ref(null);
 // Datos del dashboard
 const summaryCards = ref([]);
+const serviceImageError = ref('');
+const eventImageError = ref('');
+const productImageError = ref('');
 
 // Servicios
 const services = ref([]);
@@ -641,6 +656,7 @@ function handleProductImageUpload(event) {
 function clearServiceImage() {
   selectedServiceImage.value = null;
   serviceImagePreview.value = '';
+  serviceImageError.value = '';
   if (serviceImageInput.value) {
     serviceImageInput.value.value = '';
   }
@@ -649,6 +665,8 @@ function clearServiceImage() {
 function clearEventImage() {
   selectedEventImage.value = null;
   eventImagePreview.value = '';
+  eventImageError.value = '';
+  productImageError.value = '';
   if (eventImageInput.value) {
     eventImageInput.value.value = '';
   }
@@ -790,8 +808,29 @@ async function loadServices() {
     console.error("Error loading services:", error);
   }
 }
+function validateServiceImage() {
+  serviceImageError.value = '';
+  
+  // Si estamos editando y ya hay una imagen previa, no es obligatorio subir nueva
+  if (editingService.value && serviceImagePreview.value) {
+    return true;
+  }
+  
+  // Si es nuevo servicio, la imagen es obligatoria
+  if (!selectedServiceImage.value) {
+    serviceImageError.value = 'La imagen es obligatoria';
+    return false;
+  }
+  
+  return true;
+}
 
 async function submitService() {
+  // Validar imagen
+  if (!validateServiceImage()) {
+    return;
+  }
+  
   isSubmitting.value = true;
   try {
     // Convertir imagen a base64 si existe
@@ -863,6 +902,7 @@ function resetServiceForm() {
   serviceForm.duration = '';
   serviceDuration.hours = 0;
   serviceDuration.minutes = 0;
+  serviceImageError.value = '';
   clearServiceImage();
 }
 
@@ -891,7 +931,29 @@ async function loadEvents() {
   }
 }
 
+function validateEventImage() {
+  eventImageError.value = '';
+  
+  // Si estamos editando y ya hay una imagen previa, no es obligatorio subir nueva
+  if (editingEvent.value && eventImagePreview.value) {
+    return true;
+  }
+  
+  // Si es nuevo evento, la imagen es obligatoria
+  if (!selectedEventImage.value) {
+    eventImageError.value = 'La imagen es obligatoria';
+    return false;
+  }
+  
+  return true;
+}
+
 async function submitEvent() {
+  // Validar imagen
+  if (!validateEventImage()) {
+    return;
+  }
+  
   isSubmitting.value = true;
   try {
     // Convertir imagen a base64 si existe
@@ -959,6 +1021,7 @@ function resetEventForm() {
   eventForm.description = '';
   eventForm.date = '';
   eventForm.time = '';
+  eventImageError.value = '';
   eventForm.location = '';
   clearEventImage();
 }
@@ -988,7 +1051,28 @@ async function loadProducts() {
   }
 }
 
+function validateProductImage() {
+  productImageError.value = '';
+  
+  // Si estamos editando y ya hay una imagen previa, no es obligatorio subir nueva
+  if (editingProduct.value && productImagePreview.value) {
+    return true;
+  }
+  
+  // Si es nuevo producto, la imagen es obligatoria
+  if (!selectedProductImage.value) {
+    productImageError.value = 'La imagen es obligatoria';
+    return false;
+  }
+  
+  return true;
+}
 async function submitProduct() {
+  // Validar imagen
+  if (!validateProductImage()) {
+    return;
+  }
+  
   isSubmitting.value = true;
   try {
     // Convertir imagen a base64 si existe
@@ -1261,5 +1345,15 @@ canvas {
   background-color: rgba(220, 53, 69, 0.1);
   border-color: #dc3545;
   color: #dc3545;
+}
+.is-invalid {
+  border-color: #dc3545 !important;
+}
+
+.invalid-feedback {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
 }
 </style>
