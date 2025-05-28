@@ -45,21 +45,8 @@
         </div>
       </div>
       
-      <!-- Estado de carga -->
-      <div v-if="loading" class="d-flex justify-content-center my-5">
-        <div class="spinner-border text-warning" role="status" style="width: 3rem; height: 3rem;">
-          <span class="visually-hidden">Cargando productos...</span>
-        </div>
-      </div>
-      
-      <!-- Mensaje de error -->
-      <div v-if="error" class="alert alert-danger d-flex align-items-center" role="alert">
-        <i class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></i>
-        <div>{{ error }}</div>
-      </div>
-      
-      <!-- Listado de productos filtrados -->
-      <div v-else class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
+      <!-- Listado de productos -->
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
         <div class="col" v-for="producto in filteredProducts" :key="producto.id">
           <article class="card product-card h-100 shadow border-0">
             <div class="card-img-container position-relative">
@@ -79,7 +66,6 @@
               
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <p class="card-text text-light mb-0 fs-5">
-                  <span class="visually-hidden">Precio:</span>
                   <strong>{{ producto.price }}€</strong>
                 </p>
               </div>
@@ -88,27 +74,38 @@
                 class="btn btn-warning fw-bold w-100 mt-auto"
                 @click="agregarAlCarrito(producto)"
                 :disabled="producto.stock === 0"
-                :aria-label="`Añadir ${producto.name} al carrito`"
               >
-                <i class="bi bi-cart-plus me-2" aria-hidden="true"></i>
+                <i class="bi bi-cart-plus me-2"></i>
                 Añadir al carrito
               </button>
             </div>
           </article>
         </div>
       </div>
-      
-      <!-- Mensaje cuando no hay productos -->
-      <div v-if="!loading && !error && filteredProducts.length === 0" class="text-center my-5">
-        <div class="alert alert-info" role="alert">
-          <i class="bi bi-info-circle me-2" aria-hidden="true"></i>
-          <span v-if="searchTerm">No se encontraron productos que coincidan con "{{ searchTerm }}".</span>
-          <span v-else>No hay productos disponibles en este momento.</span>
+    </div>
+    
+    <!-- Toast de confirmación -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div
+        v-for="toast in toasts"
+        :key="toast.id"
+        class="toast align-items-center text-bg-success border-0 show"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+        :style="{ transition: 'opacity 0.5s ease-in-out' }"
+      >
+        <div class="d-flex">
+          <div class="toast-body">
+            {{ toast.message }}
+          </div>
+          <button
+            type="button"
+            class="btn-close btn-close-white me-2 m-auto"
+            @click="removeToast(toast.id)"
+            aria-label="Close"
+          ></button>
         </div>
-        <button v-if="searchTerm" class="btn btn-warning mt-3" @click="clearSearch">
-          <i class="bi bi-arrow-counterclockwise me-2" aria-hidden="true"></i>
-          Ver todos los productos
-        </button>
       </div>
     </div>
   </div>
@@ -118,35 +115,28 @@
 import { ref, computed, onMounted } from "vue";
 import { useCartStore } from "../stores/cart";
 
-
 const productos = ref([]);
 const loading = ref(true);
 const error = ref(null);
 const searchTerm = ref("");
 const showInStock = ref(false);
 const sortBy = ref("name");
-
+const toasts = ref([]);
+let toastCounter = 0;
 
 const cartStore = useCartStore();
 
-
 const filteredProducts = computed(() => {
   let result = [...productos.value];
-  
-  
   if (searchTerm.value.trim()) {
     const term = searchTerm.value.toLowerCase().trim();
-    result = result.filter(producto => 
+    result = result.filter(producto =>
       producto.name.toLowerCase().includes(term)
     );
   }
-  
-  
   if (showInStock.value) {
     result = result.filter(producto => producto.stock > 0);
   }
-  
-  
   switch (sortBy.value) {
     case "name":
       result.sort((a, b) => a.name.localeCompare(b.name));
@@ -161,30 +151,8 @@ const filteredProducts = computed(() => {
       result.sort((a, b) => b.stock - a.stock);
       break;
   }
-  
   return result;
 });
-
-
-const clearSearch = () => {
-  searchTerm.value = "";
-};
-
-
-const fetchProductos = async () => {
-  try {
-    const response = await fetch("http://localhost:8000/api/products/");
-    if (!response.ok) {
-      throw new Error("Error al obtener los productos.");
-    }
-    productos.value = await response.json();
-  } catch (err: any) {
-    error.value = err.message;
-  } finally {
-    loading.value = false;
-  }
-};
-
 
 const agregarAlCarrito = (producto: any) => {
   const productoEnCarrito = cartStore.products.find((p) => p.id === producto.id);
@@ -192,19 +160,38 @@ const agregarAlCarrito = (producto: any) => {
     const nuevaCantidad = productoEnCarrito.cantidad + 1;
     if (nuevaCantidad <= producto.stock) {
       cartStore.addProduct({ ...producto, cantidad: nuevaCantidad });
+      showToast(`Añadiste ${producto.name} al carrito.`);
     } else {
-      alert("No hay suficiente stock disponible.");
+      showToast("No hay suficiente stock disponible.", "error");
     }
   } else {
     cartStore.addProduct({ ...producto, cantidad: 1 });
+    showToast(`Añadiste ${producto.name} al carrito.`);
   }
 };
 
+const showToast = (message: string, type = "success") => {
+  const id = ++toastCounter;
+  toasts.value.push({ id, message, type });
+  setTimeout(() => removeToast(id), 3000);
+};
+
+const removeToast = (id: number) => {
+  toasts.value = toasts.value.filter((toast) => toast.id !== id);
+};
 
 onMounted(() => {
-  fetchProductos();
+  fetch("http://localhost:8000/api/products/")
+    .then(response => {
+      if (!response.ok) throw new Error("Error al obtener los productos.");
+      return response.json();
+    })
+    .then(data => (productos.value = data))
+    .catch(err => (error.value = err.message))
+    .finally(() => (loading.value = false));
 });
 </script>
+
 
 <style scoped>
 /* Página de productos */

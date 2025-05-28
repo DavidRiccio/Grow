@@ -514,6 +514,8 @@ const userStore = useUserStore();
 const isAuthorized = ref(false);
 const token = localStorage.getItem("token");
 const isSubmitting = ref(false);
+const showCancelConfirmation = ref(false);
+
 
 // Referencias para los inputs de archivos
 const serviceImageInput = ref(null);

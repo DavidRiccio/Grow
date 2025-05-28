@@ -70,7 +70,7 @@
                         <button 
                           v-if="reserva.status === 'Confirmed'"
                           class="btn cancel-btn w-100 w-lg-auto"
-                          @click="cancelarReserva(reserva.id)"
+                          @click="mostrarConfirmacionCancelarReserva(reserva)"
                           :aria-label="`Cancelar reserva del ${reserva.date}`"
                         >
                           <i class="bi bi-x-circle me-2" aria-hidden="true"></i>
@@ -111,9 +111,20 @@
                     <header class="order-header mb-3 pb-3">
                       <div class="d-flex justify-content-between align-items-start mb-2">
                         <h3 class="order-title h5 mb-0">Orden #{{ orden.id }}</h3>
-                        <span :class="getStatusClass(orden.status)" class="status-badge">
-                          {{ orden.status }}
-                        </span>
+                        <div class="d-flex align-items-center gap-2">
+                          <span :class="getStatusClass(orden.status)" class="status-badge">
+                            {{ orden.status }}
+                          </span>
+                          <button
+                            v-if="orden.status === 'Cancelled'"
+                            class="btn btn-sm delete-btn"
+                            @click="mostrarConfirmacionEliminarOrden(orden)"
+                            :aria-label="`Eliminar orden ${orden.id}`"
+                            title="Eliminar orden"
+                          >
+                            <i class="bi bi-x-lg" aria-hidden="true"></i>
+                          </button>
+                        </div>
                       </div>
                       <div class="total-price h4 text-warning mb-0">
                         <i class="bi bi-currency-euro me-1" aria-hidden="true"></i>
@@ -155,7 +166,7 @@
                         </button>
                         <button 
                           class="btn cancel-btn flex-sm-fill"
-                          @click="cancelarOrden(orden.id, orden.products)"
+                          @click="mostrarConfirmacionCancelarOrden(orden)"
                           :aria-label="`Cancelar orden ${orden.id}`"
                         >
                           <i class="bi bi-x-circle me-2" aria-hidden="true"></i>
@@ -177,6 +188,64 @@
             </div>
           </section>
 
+          <!-- Modal de Confirmación -->
+          <div v-if="mostrarModalConfirmacion" class="modal-overlay" @click="cerrarModal">
+            <div class="modal-dialog" @click.stop>
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">
+                    <i :class="modalData.icon" class="me-2"></i>
+                    {{ modalData.title }}
+                  </h5>
+                  <button type="button" class="btn-close" @click="cerrarModal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                  <p>{{ modalData.message }}</p>
+                  <div v-if="modalData.details" class="details-box">
+                    <strong>{{ modalData.details }}</strong>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" @click="cerrarModal">
+                    Cancelar
+                  </button>
+                  <button 
+                    type="button" 
+                    :class="modalData.buttonClass"
+                    @click="ejecutarAccion"
+                  >
+                    <i :class="modalData.buttonIcon" class="me-2"></i>
+                    {{ modalData.buttonText }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div
+              v-for="toast in toasts"
+              :key="toast.id"
+              class="toast align-items-center border-0 show"
+              :class="`text-bg-${toast.type}`"
+              role="alert"
+              aria-live="assertive"
+              aria-atomic="true"
+              :style="{ transition: 'opacity 0.5s ease-in-out' }"
+            >
+              <div class="d-flex">
+                <div class="toast-body">
+                  {{ toast.message }}
+                </div>
+                <button
+                  type="button"
+                  class="btn-close btn-close-white me-2 m-auto"
+                  @click="removeToast(toast.id)"
+                  aria-label="Close"
+                ></button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -188,78 +257,132 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const reservas = ref([]);
 const ordenes = ref([]);
+const toasts = ref([]);
 const token = localStorage.getItem('token');
-const router = useRouter();
+let toastId = 0;
 
-// Función para obtener la clase CSS según el estado
-const getStatusClass = (status) => {
-  switch (status) {
-    case 'Confirmed':
-      return 'status-confirmed';
-    case 'Pending':
-      return 'status-pending';
-    case 'Cancelled':
-      return 'status-cancelled';
-    default:
-      return 'status-default';
+// Modal de confirmación
+const mostrarModalConfirmacion = ref(false);
+const modalData = ref({});
+const accionPendiente = ref(null);
+
+// Toast functions
+const mostrarToast = (message, type = 'success') => {
+  const id = toastId++;
+  toasts.value.push({ id, message, type });
+  setTimeout(() => removeToast(id), 5000);
+};
+
+const removeToast = (id) => {
+  toasts.value = toasts.value.filter(toast => toast.id !== id);
+};
+
+// Modal functions
+const cerrarModal = () => {
+  mostrarModalConfirmacion.value = false;
+  modalData.value = {};
+  accionPendiente.value = null;
+};
+
+const mostrarConfirmacionCancelarReserva = (reserva) => {
+  modalData.value = {
+    title: 'Cancelar Reserva',
+    message: '¿Estás seguro de que deseas cancelar esta reserva?',
+    details: `Barbero: ${reserva.barber} - ${reserva.date} ${reserva.time_slot.start_time}`,
+    buttonText: 'Cancelar Reserva',
+    buttonClass: 'btn btn-danger',
+    buttonIcon: 'bi bi-x-circle',
+    icon: 'bi bi-exclamation-triangle text-warning'
+  };
+  accionPendiente.value = () => cancelarReserva(reserva.id);
+  mostrarModalConfirmacion.value = true;
+};
+
+const mostrarConfirmacionCancelarOrden = (orden) => {
+  modalData.value = {
+    title: 'Cancelar Orden',
+    message: '¿Estás seguro de que deseas cancelar esta orden?',
+    details: `Orden #${orden.id} - Total: ${orden.price}€`,
+    buttonText: 'Cancelar Orden',
+    buttonClass: 'btn btn-danger',
+    buttonIcon: 'bi bi-x-circle',
+    icon: 'bi bi-exclamation-triangle text-warning'
+  };
+  accionPendiente.value = () => cancelarOrden(orden.id, orden.products);
+  mostrarModalConfirmacion.value = true;
+};
+
+const mostrarConfirmacionEliminarOrden = (orden) => {
+  modalData.value = {
+    title: 'Eliminar Orden',
+    message: '¿Estás seguro de que deseas eliminar esta orden? Esta acción no se puede deshacer.',
+    details: `Orden #${orden.id} - Total: ${orden.price}€`,
+    buttonText: 'Eliminar',
+    buttonClass: 'btn btn-danger',
+    buttonIcon: 'bi bi-trash',
+    icon: 'bi bi-exclamation-triangle text-danger'
+  };
+  accionPendiente.value = () => eliminarOrden(orden.id);
+  mostrarModalConfirmacion.value = true;
+};
+
+const ejecutarAccion = async () => {
+  if (accionPendiente.value) {
+    await accionPendiente.value();
+    cerrarModal();
   }
 };
 
-// Función mejorada para agrupar productos y calcular cantidades
-const getGroupedProducts = (productos) => {
-  const productosAgrupados = {};
-  
-  // Contar cuántas veces aparece cada producto
-  productos.forEach(producto => {
-    const productId = producto.id;
-    
-    if (productosAgrupados[productId]) {
-      // Si ya existe, incrementar cantidad
-      productosAgrupados[productId].quantity += 1;
-    } else {
-      // Si no existe, crear nueva entrada con cantidad 1
-      productosAgrupados[productId] = {
-        id: producto.id,
-        name: producto.name,
-        description: producto.description,
-        price: parseFloat(producto.price),
-        stock: producto.stock,
-        image: producto.image,
-        quantity: 1
-      };
-    }
-  });
-  
-  // Convertir el objeto a array y retornar
-  return Object.values(productosAgrupados);
+// Status formatting
+const getStatusClass = (status) => {
+  switch(status) {
+    case 'Confirmed': return 'status-confirmed';
+    case 'Pending': return 'status-pending';
+    case 'Cancelled': return 'status-cancelled';
+    default: return 'status-default';
+  }
 };
 
-async function fetchReservas() {
+// Product grouping logic
+const getGroupedProducts = (productos) => {
+  return Object.values(
+    productos.reduce((acc, producto) => ({
+      ...acc,
+      [producto.id]: {
+        ...producto,
+        quantity: (acc[producto.id]?.quantity || 0) + 1
+      }
+    }), {})
+  );
+};
+
+// API calls
+const fetchReservas = async () => {
   try {
     const res = await axios.get('http://localhost:8000/api/bookings/', {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` }
     });
     reservas.value = res.data;
   } catch (error) {
-    console.error('Error al cargar reservas:', error);
+    mostrarToast('Error al cargar reservas', 'danger');
   }
-}
+};
 
-async function fetchOrdenes() {
+const fetchOrdenes = async () => {
   try {
     const res = await axios.get('http://localhost:8000/api/orders/', {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` }
     });
     ordenes.value = res.data;
-    
-    console.log('Órdenes cargadas:', res.data);
   } catch (error) {
-    console.error('Error al cargar órdenes:', error);
+    mostrarToast('Error al cargar órdenes', 'danger');
   }
-}
+};
 
+// Actions
 const pagarOrden = (id) => {
   router.push(`/payment/${id}`);
 };
@@ -267,66 +390,64 @@ const pagarOrden = (id) => {
 const cancelarReserva = async (id) => {
   try {
     await axios.post(`http://localhost:8000/api/bookings/${id}/cancel/`, {}, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` }
     });
-    alert("Reserva cancelada exitosamente.");
-    fetchReservas();
+    mostrarToast('Reserva cancelada exitosamente', 'success');
+    await fetchReservas();
   } catch (error) {
-    console.error('Error al cancelar la reserva:', error);
-    alert("Error al cancelar la reserva.");
+    mostrarToast('Error al cancelar reserva', 'danger');
   }
 };
 
 const cancelarOrden = async (id, productos) => {
   try {
-    // Calcular las cantidades de cada producto
-    const conteoProductos = {};
-    
-    productos.forEach(producto => {
-      const productId = producto.id;
-      
-      if (conteoProductos[productId]) {
-        conteoProductos[productId].quantity += 1;
-      } else {
-        conteoProductos[productId] = {
-          id: productId,
-          name: producto.name,
-          quantity: 1
-        };
-      }
-    });
-
-    // Preparar el payload para el servidor
-    const productosAEnviar = Object.values(conteoProductos).map(producto => ({
-      id: producto.id,
-      quantity: producto.quantity
-    }));
-
-    console.log('Productos a cancelar:', productosAEnviar);
-
-    const response = await axios.post(`http://localhost:8000/api/orders/${id}/cancel-order/`, 
-      { products: productosAEnviar },
-      {
-        headers: { 
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-      }
+    const payload = Object.values(
+      productos.reduce((acc, producto) => ({
+        ...acc,
+        [producto.id]: {
+          id: producto.id,
+          quantity: (acc[producto.id]?.quantity || 0) + 1
+        }
+      }), {})
     );
+
+ await axios.post(
+  `http://localhost:8000/api/orders/${id}/cancel-order/`,
+  { id },
+  {
+    headers: { Authorization: `Bearer ${token}` }
+  }
+);
+
     
-    console.log('Respuesta del servidor:', response.data);
-    alert("Orden cancelada exitosamente.");
-    fetchOrdenes();
+    mostrarToast('Orden cancelada exitosamente', 'success');
+    await fetchOrdenes();
   } catch (error) {
-    console.error('Error al cancelar la orden:', error);
-    if (error.response) {
-      console.error('Datos de la respuesta de error:', error.response.data);
-      console.error('Status de la respuesta:', error.response.status);
-    }
-    alert(`Error al cancelar la orden: ${error.response?.data?.error || error.message}`);
+    const errorMsg = error.response?.data?.error || 'Error al cancelar orden';
+    mostrarToast(errorMsg, 'danger');
   }
 };
 
+async function eliminarOrden(id) {
+  try {
+    await axios.post(`http://localhost:8000/api/orders/${id}/delete/`, 
+      { id }, 
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    mostrarToast('Orden eliminada exitosamente', 'success');
+    await fetchOrdenes();
+  } catch (error) {
+    const errorMsg = error.response?.data?.error || 'Error al eliminar orden';
+    mostrarToast(errorMsg, 'danger');
+  }
+}
+
+// Lifecycle
 onMounted(() => {
   fetchReservas();
   fetchOrdenes();
@@ -334,6 +455,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
+
 @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&family=Poppins:wght@400;500;600&display=swap');
 
 /* Base Styles */
@@ -342,6 +464,59 @@ onMounted(() => {
   min-height: 100vh;
   color: white;
   font-family: 'Poppins', sans-serif;
+}
+/* Toast Styles */
+.toast-container {
+  z-index: 1050;
+}
+
+.toast {
+  opacity: 0.95;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-bottom: 0.75rem;
+}
+
+.text-bg-success {
+  background-color: rgba(40, 167, 69, 0.95) !important;
+  border: 1px solid rgba(40, 167, 69, 0.85) !important;
+}
+
+.text-bg-danger {
+  background-color: rgba(220, 53, 69, 0.95) !important;
+  border: 1px solid rgba(220, 53, 69, 0.85) !important;
+}
+
+.btn-close-white {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Transición para remover toasts */
+.toast-leave-active {
+  transition: all 0.5s ease;
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.toast {
+  opacity: 0.95;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-bottom: 0.5rem;
+}
+
+.text-bg-success {
+  background-color: rgba(40, 167, 69, 0.95) !important;
+  border-color: rgba(40, 167, 69, 0.85) !important;
+}
+
+.text-bg-danger {
+  background-color: rgba(220, 53, 69, 0.95) !important;
+  border-color: rgba(220, 53, 69, 0.85) !important;
+}
+
+.btn-close-white {
+  filter: invert(1) grayscale(100%) brightness(200%);
 }
 
 /* Page Title */
@@ -592,7 +767,156 @@ onMounted(() => {
   position: relative;
   overflow: hidden;
 }
+.delete-btn {
+  background: transparent;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  transition: all 0.3s ease;
+}
 
+.delete-btn:hover {
+  background: #dc3545;
+  color: white;
+  transform: scale(1.1);
+}
+
+/* Estilos para el modal de confirmación */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  backdrop-filter: blur(5px);
+}
+
+.modal-dialog {
+  max-width: 500px;
+  width: 90%;
+  margin: 1rem;
+}
+
+.modal-content {
+  background: #212529;
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 1rem;
+  color: white;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+  display: flex;
+  justify-content: between;
+  align-items: center;
+}
+
+.modal-title {
+  font-family: 'Kanit', sans-serif;
+  font-weight: 600;
+  color: #ffd700;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  margin-left: 1rem;
+}
+
+.btn-close:hover {
+  color: #ffd700;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.details-box {
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  color: #ffd700;
+}
+
+.modal-footer {
+  padding: 1.5rem;
+  border-top: 1px solid rgba(255, 215, 0, 0.2);
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.btn-secondary {
+  background: rgba(108, 117, 125, 0.3);
+  border: 1px solid #6c757d;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-danger {
+  background: #dc3545;
+  border: 1px solid #dc3545;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+  background: #c82333;
+  border-color: #c82333;
+  color: white;
+}
+
+/* Responsive para el modal */
+@media (max-width: 576px) {
+  .modal-dialog {
+    width: 95%;
+    margin: 0.5rem;
+  }
+  
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: 1rem;
+  }
+  
+  .modal-footer {
+    flex-direction: column;
+  }
+  
+  .modal-footer .btn {
+    width: 100%;
+  }
+}
 .pay-btn {
   background: linear-gradient(45deg, #28a745, #20c997);
   border-color: #28a745;
