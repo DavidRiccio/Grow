@@ -13,6 +13,7 @@
           <i class="bi bi-check-circle-fill text-success me-3 fs-4" aria-hidden="true"></i>
           <div>
             <div class="fw-bold">¡Reserva confirmada!</div>
+            <small>Revisa tu correo!!</small><br>
             <small class="text-muted">ID de reserva: {{ bookingId }}</small>
           </div>
           <button 

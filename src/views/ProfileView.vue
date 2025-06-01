@@ -399,30 +399,45 @@ const cancelarReserva = async (id) => {
   }
 };
 
-const cancelarOrden = async (id, productos) => {
+const cancelarOrden = async (id) => {
   try {
-    const payload = Object.values(
-      productos.reduce((acc, producto) => ({
-        ...acc,
-        [producto.id]: {
-          id: producto.id,
-          quantity: (acc[producto.id]?.quantity || 0) + 1
+    // Buscar la orden completa usando el ID
+    const orden = ordenes.value.find(o => o.id === id);
+    
+    if (!orden) {
+      mostrarToast('Orden no encontrada', 'danger');
+      return;
+    }
+
+    // Crear un array con IDs repetidos según la cantidad visualizada
+    const productIDs = [];
+    getGroupedProducts(orden.products).forEach(producto => {
+      for (let i = 0; i < producto.quantity; i++) {
+        productIDs.push({ id: producto.id });
+      }
+    });
+
+    const payload = {
+      products: productIDs
+    };
+
+    console.log("Payload enviado:", payload); // Verificar en consola
+
+    await axios.post(
+      `http://localhost:8000/api/orders/${id}/cancel-order/`,
+      payload,
+      {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
-      }), {})
+      }
     );
-
- await axios.post(
-  `http://localhost:8000/api/orders/${id}/cancel-order/`,
-  { id },
-  {
-    headers: { Authorization: `Bearer ${token}` }
-  }
-);
-
     
     mostrarToast('Orden cancelada exitosamente', 'success');
     await fetchOrdenes();
   } catch (error) {
+    console.error('Error al cancelar orden:', error.response?.data);
     const errorMsg = error.response?.data?.error || 'Error al cancelar orden';
     mostrarToast(errorMsg, 'danger');
   }
