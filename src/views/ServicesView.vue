@@ -114,20 +114,42 @@ function formatDuration(isoDuration: string): string {
   return parts.join(' ') || '0min'
 }
 
-// Obtener servicios del backend
+// Obtener servicios del backend (sin autenticación)
 const fetchServices = async () => {
   try {
-    const res = await axios.get('http://localhost:8000/api/services/')
+    // Configuración de axios sin headers de autenticación
+    const config = {
+      timeout: 10000, // Timeout de 10 segundos
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    }
+    
+    const res = await axios.get('http://localhost:8000/api/services/', config)
     services.value = res.data
   } catch (err: any) {
-    error.value = 'Error al cargar servicios: ' + (err.message || 'Desconocido')
     console.error('Error al cargar servicios:', err)
+    
+    // Manejo específico de errores
+    if (err.code === 'ECONNABORTED') {
+      error.value = 'Tiempo de espera agotado. Verifica tu conexión.'
+    } else if (err.response?.status === 401) {
+      error.value = 'No tienes permisos para ver los servicios.'
+    } else if (err.response?.status === 404) {
+      error.value = 'Servicios no encontrados.'
+    } else if (err.response?.status >= 500) {
+      error.value = 'Error del servidor. Inténtalo más tarde.'
+    } else {
+      error.value = 'Error al cargar servicios: ' + (err.message || 'Desconocido')
+    }
   } finally {
     loading.value = false
   }
 }
 
-onMounted(fetchServices)
+onMounted(() => {
+  fetchServices()
+})
 </script>
 
 <style scoped>

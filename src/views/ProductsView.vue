@@ -76,7 +76,7 @@
                 :disabled="producto.stock === 0"
               >
                 <i class="bi bi-cart-plus me-2"></i>
-                Añadir al carrito
+                {{ isAuthenticated ? 'Añadir al carrito' : 'Iniciar sesión para comprar' }}
               </button>
             </div>
           </article>
@@ -89,7 +89,8 @@
       <div
         v-for="toast in toasts"
         :key="toast.id"
-        class="toast align-items-center text-bg-success border-0 show"
+        class="toast align-items-center border-0 show"
+        :class="toast.type === 'error' ? 'text-bg-danger' : 'text-bg-success'"
         role="alert"
         aria-live="assertive"
         aria-atomic="true"
@@ -113,8 +114,11 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { useCartStore } from "../stores/cart";
+import { useUserStore } from "../stores/userStore";
 
+const router = useRouter();
 const productos = ref([]);
 const loading = ref(true);
 const error = ref(null);
@@ -125,6 +129,12 @@ const toasts = ref([]);
 let toastCounter = 0;
 
 const cartStore = useCartStore();
+const userStore = useUserStore();
+
+// Computed para verificar si el usuario está autenticado
+const isAuthenticated = computed(() => {
+  return userStore.isAuthenticated;
+});
 
 const filteredProducts = computed(() => {
   let result = [...productos.value];
@@ -155,19 +165,49 @@ const filteredProducts = computed(() => {
 });
 
 const agregarAlCarrito = (producto: any) => {
-  const productoEnCarrito = cartStore.products.find((p) => p.id === producto.id);
+  // Verificar si el usuario está autenticado
+  if (!isAuthenticated.value) {
+    // Guardar la URL actual para redirigir después del login
+    const currentRoute = router.currentRoute.value.fullPath;
+    
+    // Mostrar mensaje informativo
+    showToast("Debes iniciar sesión para añadir productos al carrito", "error");
+    
+    // Redirigir al login después de un breve delay
+    setTimeout(() => {
+      router.push({
+        name: 'login', // Asegúrate de que esta sea la ruta correcta de tu login
+        query: { redirect: currentRoute } // Para redirigir de vuelta después del login
+      });
+    }, 1500);
+    
+    return;
+  }
+
+  // Si está autenticado, proceder normalmente
+  const productoEnCarrito = cartStore.productos.find((p) => p.id === producto.id);
   if (productoEnCarrito) {
     const nuevaCantidad = productoEnCarrito.cantidad + 1;
     if (nuevaCantidad <= producto.stock) {
-      cartStore.addProduct({ ...producto, cantidad: nuevaCantidad });
+      cartStore.actualizarCantidad(producto.id, nuevaCantidad);
       showToast(`Añadiste ${producto.name} al carrito.`);
     } else {
       showToast("No hay suficiente stock disponible.", "error");
     }
   } else {
-    cartStore.addProduct({ ...producto, cantidad: 1 });
+    // Añadir nuevo producto al carrito
+    const nuevosProductos = [...cartStore.productos, { 
+      ...producto, 
+      cantidad: 1,
+      precio: producto.price // Mapear price a precio para que coincida con tu store
+    }];
+    cartStore.setProductos(nuevosProductos);
     showToast(`Añadiste ${producto.name} al carrito.`);
   }
+};
+
+const clearSearch = () => {
+  searchTerm.value = "";
 };
 
 const showToast = (message: string, type = "success") => {
@@ -181,6 +221,9 @@ const removeToast = (id: number) => {
 };
 
 onMounted(() => {
+  // Inicializar el store de usuario para recuperar datos del localStorage
+  userStore.initialize();
+  
   fetch("http://localhost:8000/api/products/")
     .then(response => {
       if (!response.ok) throw new Error("Error al obtener los productos.");
@@ -191,7 +234,6 @@ onMounted(() => {
     .finally(() => (loading.value = false));
 });
 </script>
-
 
 <style scoped>
 /* Página de productos */

@@ -19,14 +19,14 @@
           <i class="bi bi-cart text-warning display-1" aria-hidden="true"></i>
         </div>
         <p class="fs-4 text-light mb-4">Tu carrito está vacío. ¡Añade productos!</p>
-        <a
-          href="/products"
+        <router-link
+          to="/products"
           class="btn btn-warning px-4 py-2 fw-semibold"
           role="button"
           aria-label="Ir a la sección de productos"
         >
           <i class="bi bi-bag-plus me-2" aria-hidden="true"></i>Ir a Productos
-        </a>
+        </router-link>
       </div>
 
       <!-- Carrito con productos -->
@@ -44,7 +44,7 @@
                   loading="lazy"
                 />
                 <span class="position-absolute top-0 end-0 m-2 badge bg-warning text-dark fw-bold">
-                  €{{ producto.price }}
+                  €{{ producto.price || producto.precio }}
                 </span>
               </div>
               <div class="card-body d-flex flex-column">
@@ -80,7 +80,7 @@
                 <div class="d-flex justify-content-between align-items-center mt-auto">
                   <span class="text-light">
                     Subtotal:
-                    <strong class="text-warning">€{{ (producto.price * producto.cantidad).toFixed(2) }}</strong>
+                    <strong class="text-warning">€{{ ((producto.price || producto.precio) * producto.cantidad).toFixed(2) }}</strong>
                   </span>
                   <button
                     class="btn btn-outline-danger btn-sm"
@@ -107,7 +107,7 @@
               </div>
               <div class="d-flex justify-content-between fw-bold fs-5 mt-2">
                 <span class="text-white">Total:</span>
-                <span class="text-warning">€{{ total }}</span>
+                <span class="text-warning">€{{ total.toFixed(2) }}</span>
               </div>
             </div>
             <div class="col-md-6">
@@ -135,21 +135,22 @@
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { useCartStore } from "../stores/cart";
+import { useCartStore, useUserStore } from "../stores/userStore";
 
 const cartStore = useCartStore();
+const userStore = useUserStore();
 const router = useRouter();
 const isProcessing = ref(false);
 
-const cartProducts = computed(() => cartStore.products);
+const cartProducts = computed(() => cartStore.productos);
 const total = computed(() => cartStore.total);
 
 const eliminarDelCarrito = (id: number) => {
-  cartStore.removeProduct(id);
+  cartStore.eliminarProducto(id);
 };
 
 const vaciarCarrito = () => {
-  cartStore.emptyCart();
+  cartStore.vaciarCarrito();
 };
 
 const actualizarCantidad = (id: number, nuevaCantidad: number) => {
@@ -165,17 +166,15 @@ const actualizarCantidad = (id: number, nuevaCantidad: number) => {
     return;
   }
 
-  cartStore.updateQuantity(id, nuevaCantidad);
+  cartStore.actualizarCantidad(id, nuevaCantidad);
 };
-
-const token = localStorage.getItem("token");
 
 const pagarTarde = async () => {
   if (cartProducts.value.length === 0) {
     alert("Tu carrito está vacío.");
     return;
   }
-  if (!token) {
+  if (!userStore.token) {
     alert("Debes iniciar sesión para proceder con el pago.");
     router.push("/login");
     return;
@@ -187,7 +186,7 @@ const pagarTarde = async () => {
     const response = await axios.post(
       "http://localhost:8000/api/orders/add/",
       { products: productsToSend },
-      { headers: { Authorization: `Bearer ${token}` } }
+      { headers: { Authorization: `Bearer ${userStore.token}` } }
     );
 
     if (response.status === 201 || response.status === 200) {
@@ -216,7 +215,7 @@ const procesarPago = async () => {
     alert("Tu carrito está vacío.");
     return;
   }
-  if (!token) {
+  if (!userStore.token) {
     alert("Debes iniciar sesión para proceder con el pago.");
     router.push("/login");
     return;
@@ -228,7 +227,7 @@ const procesarPago = async () => {
     const response = await axios.post(
       "http://localhost:8000/api/orders/add/",
       { products: productsToSend },
-      { headers: { Authorization: `Bearer ${token}` } }
+      { headers: { Authorization: `Bearer ${userStore.token}` } }
     );
 
     if (response.status === 201 || response.status === 200) {
@@ -259,7 +258,8 @@ const procesarPago = async () => {
 };
 
 onMounted(() => {
-  cartStore.loadCart();
+  // Inicializar el store de usuario para recuperar datos del localStorage
+  userStore.initialize();
 });
 </script>
 

@@ -40,10 +40,10 @@
       <div class="d-flex align-items-center ms-auto">
         <div v-if="userStore.isAuthenticated" class="d-flex align-items-center me-3">
           <router-link to="/profile">
-          <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-warning text-dark me-2" style="width: 28px; height: 28px">
-            {{ userStore.user?.username?.charAt(0).toUpperCase() || "U" }}
-          </span>
-        </router-link>
+            <span class="d-inline-flex justify-content-center align-items-center rounded-circle bg-warning text-dark me-2" style="width: 28px; height: 28px">
+              {{ userStore.user?.username?.charAt(0).toUpperCase() || "U" }}
+            </span>
+          </router-link>
           <router-link to="/profile">
             <span class="d-none d-sm-inline text-light no-decorator">{{ userStore.user?.username }}</span>
           </router-link>
@@ -57,7 +57,7 @@
         <router-link to="/cart" class="btn btn-warning position-relative rounded-circle p-2 d-flex justify-content-center align-items-center" aria-label="Carrito de compras" style="width: 38px; height: 38px">
           <i class="bi bi-cart-fill"></i>
           <span v-if="cartItemCount > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-
+            {{ cartItemCount }}
           </span>
         </router-link>
       </div>
@@ -66,25 +66,66 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { useUserStore } from "../stores/userStore";
+import { useCartStore } from "../stores/userStore";
 
 const userStore = useUserStore();
-const cartItemCount = ref(0);
+const cartStore = useCartStore();
+
+// Usar computed para el conteo del carrito en lugar de ref
+const cartItemCount = computed(() => {
+  // Primero intentamos obtener del store si está disponible
+  if (cartStore && cartStore.productos) {
+    return cartStore.productos.reduce((total, producto) => total + producto.cantidad, 0);
+  }
+  
+  // Fallback a localStorage solo si es necesario y estamos en el cliente
+  if (typeof window !== 'undefined') {
+    try {
+      const cartItems = localStorage.getItem("cartItems");
+      return cartItems ? JSON.parse(cartItems).length : 0;
+    } catch (error) {
+      console.warn('Error al leer el carrito del localStorage:', error);
+      return 0;
+    }
+  }
+  
+  return 0;
+});
 
 const handleLogout = () => {
   console.log('Logout iniciado');
   userStore.logout();
+  
+  // Limpiar también el carrito al cerrar sesión
+  if (cartStore && cartStore.vaciarCarrito) {
+    cartStore.vaciarCarrito();
+  }
+  
+  // Limpiar localStorage relacionado al carrito
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem("cartItems");
+  }
+  
   console.log('Store limpiado');
   window.location.href = '/';
 };
 
 onMounted(async () => {
+  // Inicializar el store del usuario
   userStore.initialize();
+  
+  // Si está autenticado pero no tiene datos del usuario, obtenerlos
   if (userStore.isAuthenticated && !userStore.user) {
-    await userStore.fetchUser ();
+    try {
+      await userStore.fetchUser();
+    } catch (error) {
+      console.warn('Error al obtener datos del usuario:', error);
+      // Si falla la obtención del usuario, posiblemente el token expiró
+      userStore.logout();
+    }
   }
-  cartItemCount.value = localStorage.getItem("cartItems") ? JSON.parse(localStorage.getItem("cartItems")).length : 0;
 });
 </script>
 
@@ -94,6 +135,16 @@ onMounted(async () => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(8px);
   z-index: 1030;
+}
+
+/* Quitar decoración de enlaces */
+.no-decorator {
+  text-decoration: none !important;
+}
+
+.no-decorator:hover {
+  text-decoration: none !important;
+  color: #ffb100 !important;
 }
 
 /* Animación para el menú móvil */
@@ -150,5 +201,12 @@ onMounted(async () => {
   font-size: 0.65rem;
   font-weight: 600;
   padding: 0.25em 0.45em;
+}
+
+/* Mejoras de accesibilidad */
+.btn:focus,
+.nav-link:focus {
+  outline: 2px solid rgba(255, 177, 0, 0.5);
+  outline-offset: 2px;
 }
 </style>

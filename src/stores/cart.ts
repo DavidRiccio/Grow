@@ -1,88 +1,113 @@
 import { defineStore } from "pinia";
 
-export interface CartProduct {
-  id: number;
-  name: string;
-  image: string;
-  price: number;
-  stock: number;
-  cantidad: number;
-}
-
-interface State {
-  products: CartProduct[];
-}
-
+// Store para carrito
 export const useCartStore = defineStore("cart", {
-  state: (): State => ({
-    products: [],
+  state: () => ({
+    products: [] as any[], // Cambiado de 'productos' a 'products'
+    total: 0,
   }),
-
-  getters: {
-    total: (state) => state.products.reduce((acc, p) => acc + p.price * p.cantidad, 0),
-  },
-
   actions: {
+    // Cargar carrito desde localStorage
     loadCart() {
-      try {
-        const saved = localStorage.getItem("cart");
-        if (saved) this.products = JSON.parse(saved);
-      } catch (error) {
-        console.error("Error loading cart:", error);
+      const cartData = localStorage.getItem("cart");
+      if (cartData) {
+        const parsedData = JSON.parse(cartData);
+        this.products = parsedData.products || [];
+        this.updateTotal();
       }
     },
 
-    persistCart() {
-      localStorage.setItem("cart", JSON.stringify(this.products));
+    // Guardar carrito en localStorage
+    saveCart() {
+      localStorage.setItem("cart", JSON.stringify({
+        products: this.products,
+        total: this.total
+      }));
     },
 
-    addProduct(product: CartProduct) {
-      const existingProduct = this.products.find((p) => p.id === product.id);
+    // Agregar producto al carrito
+    addProduct(product: any) {
+      const existingProduct = this.products.find(p => p.id === product.id);
+      
       if (existingProduct) {
-        // Sumar 1 solo si no supera el stock
-        if (existingProduct.cantidad < existingProduct.stock) {
-          existingProduct.cantidad += 1;
-          this.persistCart();
-        } else {
-          alert("No puedes añadir más productos, stock insuficiente");
-        }
+        // Si el producto ya existe, actualizar la cantidad
+        existingProduct.cantidad = product.cantidad;
       } else {
-        if (product.stock > 0) {
-          this.products.push({ ...product, cantidad: 1 });
-          this.persistCart();
-        } else {
-          alert("Producto sin stock");
-        }
+        // Si es un producto nuevo, agregarlo
+        this.products.push({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image: product.image,
+          stock: product.stock,
+          cantidad: product.cantidad || 1
+        });
       }
+      
+      this.updateTotal();
+      this.saveCart();
     },
 
+    // Actualizar productos (para compatibilidad con código existente)
+    setProductos(productos: any[]) {
+      this.products = productos.map(p => ({
+        ...p,
+        cantidad: p.cantidad || 1
+      }));
+      this.updateTotal();
+      this.saveCart();
+    },
+
+    // Eliminar producto del carrito
     removeProduct(id: number) {
-      this.products = this.products.filter((p) => p.id !== id);
-      this.persistCart();
+      this.products = this.products.filter(p => p.id !== id);
+      this.updateTotal();
+      this.saveCart();
     },
 
+    // Método para compatibilidad (eliminarProducto -> removeProduct)
+    eliminarProducto(id: number) {
+      this.removeProduct(id);
+    },
+
+    // Actualizar cantidad de un producto
     updateQuantity(id: number, cantidad: number) {
-      const product = this.products.find((p) => p.id === id);
-      if (product) {
-        if (cantidad > product.stock) {
-          alert("No puedes seleccionar una cantidad mayor al stock disponible");
-          product.cantidad = product.stock;
-        } else if (cantidad < 1) {
-          product.cantidad = 1;
-        } else {
-          product.cantidad = cantidad;
-        }
-        this.persistCart();
+      const product = this.products.find(p => p.id === id);
+      if (product && cantidad >= 1 && cantidad <= product.stock) {
+        product.cantidad = cantidad;
+        this.updateTotal();
+        this.saveCart();
       }
     },
 
+    // Método para compatibilidad (actualizarCantidad -> updateQuantity)
+    actualizarCantidad(id: number, cantidad: number) {
+      this.updateQuantity(id, cantidad);
+    },
+
+    // Vaciar carrito
     emptyCart() {
       this.products = [];
-      this.persistCart();
+      this.total = 0;
+      localStorage.removeItem("cart");
     },
-  },
 
-  hydrate() {
-    this.loadCart();
+    // Método para compatibilidad (vaciarCarrito -> emptyCart)
+    vaciarCarrito() {
+      this.emptyCart();
+    },
+
+    // Actualizar total del carrito
+    updateTotal() {
+      this.total = this.products.reduce(
+        (acc, p) => acc + (p.price * p.cantidad),
+        0
+      );
+    },
+
+    // Método para compatibilidad (actualizarTotal -> updateTotal)
+    actualizarTotal() {
+      this.updateTotal();
+    },
   },
 });

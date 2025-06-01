@@ -139,16 +139,17 @@
                       </h4>
                       <ul class="products-list list-unstyled" role="list">
                         <li
-                          v-for="producto in getGroupedProducts(orden.products)"
-                          :key="producto.id"
+                          v-for="item in orden.items"
+                          :key="item.id"
                           class="product-item d-flex justify-content-between align-items-center py-2"
                           role="listitem"
                         >
                           <div class="product-info flex-grow-1">
-                            <span class="product-name d-block">{{ producto.name }}</span>
+                            <span class="product-name d-block">{{ item.product.name }}</span>
+                            <span class="product-quantity text-white small">Cantidad: {{ item.quantity }}</span>
                           </div>
                           <span class="product-price fw-bold text-end ms-2">
-                            {{ (producto.price * producto.quantity).toFixed(2) }}€
+                            {{ item.subtotal }}€
                           </span>
                         </li>
                       </ul>
@@ -311,7 +312,7 @@ const mostrarConfirmacionCancelarOrden = (orden) => {
     buttonIcon: 'bi bi-x-circle',
     icon: 'bi bi-exclamation-triangle text-warning'
   };
-  accionPendiente.value = () => cancelarOrden(orden.id, orden.products);
+  accionPendiente.value = () => cancelarOrden(orden.id, orden.items);
   mostrarModalConfirmacion.value = true;
 };
 
@@ -342,21 +343,9 @@ const getStatusClass = (status) => {
     case 'Confirmed': return 'status-confirmed';
     case 'Pending': return 'status-pending';
     case 'Cancelled': return 'status-cancelled';
+    case 'Completed': return 'status-confirmed';
     default: return 'status-default';
   }
-};
-
-// Product grouping logic
-const getGroupedProducts = (productos) => {
-  return Object.values(
-    productos.reduce((acc, producto) => ({
-      ...acc,
-      [producto.id]: {
-        ...producto,
-        quantity: (acc[producto.id]?.quantity || 0) + 1
-      }
-    }), {})
-  );
 };
 
 // API calls
@@ -399,26 +388,16 @@ const cancelarReserva = async (id) => {
   }
 };
 
-const cancelarOrden = async (id) => {
+const cancelarOrden = async (id, items) => {
   try {
-    // Buscar la orden completa usando el ID
-    const orden = ordenes.value.find(o => o.id === id);
-    
-    if (!orden) {
-      mostrarToast('Orden no encontrada', 'danger');
-      return;
-    }
-
-    // Crear un array con IDs repetidos según la cantidad visualizada
-    const productIDs = [];
-    getGroupedProducts(orden.products).forEach(producto => {
-      for (let i = 0; i < producto.quantity; i++) {
-        productIDs.push({ id: producto.id });
-      }
-    });
+    // Crear el array de productos con el formato solicitado: id y quantity
+    const products = items.map(item => ({
+      id: item.product.id,
+      quantity: item.quantity
+    }));
 
     const payload = {
-      products: productIDs
+      products: products
     };
 
     console.log("Payload enviado:", payload); // Verificar en consola

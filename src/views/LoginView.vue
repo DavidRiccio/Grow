@@ -1,5 +1,31 @@
 <template>
   <div class="login-wrapper d-flex justify-content-center align-items-center">
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+      <div 
+        v-if="toastMessage" 
+        class="toast show" 
+        :class="{ 'toast-error': toastType === 'error', 'toast-success': toastType === 'success' }"
+        role="alert"
+      >
+        <div class="toast-header">
+          <strong class="me-auto">
+            <i :class="toastType === 'error' ? 'fas fa-exclamation-triangle' : 'fas fa-check-circle'"></i>
+            {{ toastType === 'error' ? 'Error' : 'Éxito' }}
+          </strong>
+          <button 
+            type="button" 
+            class="btn-close" 
+            @click="closeToast"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="toast-body">
+          {{ toastMessage }}
+        </div>
+      </div>
+    </div>
+
     <div class="card p-4 rounded-4 shadow login-card">
       <h2 class="text-warning mb-4 text-center">Iniciar Sesión</h2>
       <form @submit.prevent="handleLogin" novalidate>
@@ -46,14 +72,42 @@ const userStore = useUserStore();
 const router = useRouter();
 const isLoading = ref(false);
 
+// Estado para el toast
+const toastMessage = ref("");
+const toastType = ref<"success" | "error">("error");
+const toastTimeout = ref<NodeJS.Timeout | null>(null);
+
 const form = reactive({
   username: "",
   password: "",
 });
 
+// Función para mostrar toast
+const showToast = (message: string, type: "success" | "error" = "error") => {
+  toastMessage.value = message;
+  toastType.value = type;
+  
+  // Auto-cerrar después de 4 segundos
+  if (toastTimeout.value) {
+    clearTimeout(toastTimeout.value);
+  }
+  toastTimeout.value = setTimeout(() => {
+    closeToast();
+  }, 4000);
+};
+
+// Función para cerrar toast
+const closeToast = () => {
+  toastMessage.value = "";
+  if (toastTimeout.value) {
+    clearTimeout(toastTimeout.value);
+    toastTimeout.value = null;
+  }
+};
+
 const handleLogin = async () => {
   if (!form.username || !form.password) {
-    alert("Por favor, introduce usuario y contraseña");
+    showToast("Por favor, introduce usuario y contraseña", "error");
     return;
   }
 
@@ -64,21 +118,36 @@ const handleLogin = async () => {
     const role = response.data.role;
 
     if (!token) {
-      alert("Token no recibido, login fallido");
+      showToast("Token no recibido, login fallido", "error");
       return;
     }
 
     if (!role) {
-      alert("Rol no recibido, login fallido");
+      showToast("Rol no recibido, login fallido", "error");
       return;
     }
 
     userStore.setUser({ username: form.username, token, role });
+    
+    // Esperar un poco antes de redirigir para que se vea el toast de éxito
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 1500);
 
-    window.location.href = "/";
   } catch (error: any) {
     console.error("Error en el login:", error.response?.data || error.message);
-    alert("Usuario o contraseña incorrectos.");
+    
+    // Mensaje más específico según el error
+    let errorMessage = "Usuario o contraseña incorrectos";
+    if (error.response?.status === 401) {
+      errorMessage = "Credenciales inválidas. Verifica tu usuario y contraseña";
+    } else if (error.response?.status === 500) {
+      errorMessage = "Error del servidor. Inténtalo más tarde";
+    } else if (!error.response) {
+      errorMessage = "No se pudo conectar con el servidor";
+    }
+    
+    showToast(errorMessage, "error");
   } finally {
     isLoading.value = false;
   }
@@ -163,4 +232,65 @@ input.form-control:focus {
   background-color: #ffd700 !important;
   color: #1a1a1a !important;
 }
-</style>
+
+/* Estilos para Toast */
+.toast-container {
+  z-index: 9999;
+}
+
+.toast {
+  min-width: 300px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: none;
+  animation: slideInRight 0.3s ease-out;
+}
+
+.toast-error {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+}
+
+.toast-success {
+  background: linear-gradient(135deg, #28a745, #218838);
+  color: white;
+}
+
+.toast-header {
+  background: rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: inherit;
+}
+
+.toast-body {
+  font-weight: 500;
+}
+
+.btn-close {
+  filter: invert(1);
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .toast {
+    min-width: 280px;
+    margin: 0 1rem;
+  }
+  
+  .toast-container {
+    left: 0;
+    right: 0;
+    top: 1rem !important;
+  }
+}</style>
